@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESN Nicosia | Scavenger Hunt</title>
+    <link href="assets/images/favicon.svg" rel="icon">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+<div id="congratulations"
+     style="align-items: center; align-content: center; display: none; flex-direction: column; padding-bottom: 20px">
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
+    <lord-icon
+            src="https://cdn.lordicon.com/fkmafinl.json"
+            trigger="in"
+            delay="350"
+            state="in-reveal"
+            colors="primary:#7ac143,secondary:#f47b20,tertiary:#00aeef,quaternary:#ec008c"
+            style="width:500px;height:500px">
+    </lord-icon>
+    <H1 style=";padding-bottom: 10px">Congratulations!</H1>
+    <p style="text-align: center">You have at arrived at your next clue.<br>Please click the button below to see your
+        clue.</p>
+</div>
+<div id="welcome"
+     style="align-items: center; align-content: center; display: none; flex-direction: column; padding-bottom: 20px">
+    <img src="/assets/images/logo.png" style="width: 500px" alt="ESN Logo">
+    <H1 style=";padding-bottom: 10px">Welcome!</H1>
+    <p style="text-align: center">We would like to welcome you to the ESN Scavenger Hunt.<br>Please enter your
+        designated team name to begin.</p>
+    <label>
+        <input id="team" style="display: inline; width: 400px; height: 40px; font-size: 18pt">
+    </label>
+</div>
+<div id="finish"
+     style="align-items: center; align-content: center; display: none; flex-direction: column; padding-bottom: 20px">
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
+    <lord-icon
+            src="https://media.lordicon.com/icons/wired/flat/2525-finish-line.json"
+            trigger="in"
+            delay="350"
+            state="in-reveal"
+            colors="primary:#ebe6ef,secondary:#3a3347,tertiary:#ffc738,quaternary:#f24c00"
+            style="width:500px;height:500px">
+    </lord-icon>
+    <H1 style=";padding-bottom: 10px">Congratulations!</H1>
+    <p style="text-align: center">You have finished the game.<br>Please follow your ESNer's instructions.</p>
+</div>
+<div style="align-items: center; align-content: center; display: flex; flex-direction: column">
+    <button id="button" style="height: 75px; width: 150px; margin-bottom: 20px"></button>
+    <a onclick="openOverride()">ESNer Override</a>
+</div>
+<footer>&copy2024 <b>Andreas Michael</b></footer>
+<dialog id="hint">
+    <div style="align-items: center; align-content: center; display: flex; flex-direction: column;">
+        <p id="hintText" style="text-align: center; display: none"></p>
+        <img id="hintImage" alt="" src="" style="display: none">
+        <button id="hintOK" style="padding-top: 10px">OK</button>
+    </div>
+</dialog>
+<dialog id="error">
+    <div style="align-items: center; align-content: center; display: flex; flex-direction: column;">
+        <p id="errorText" style="text-align: center; padding-bottom: 10px"></p>
+        <button id="errorOK">OK</button>
+    </div>
+</dialog>
+<dialog id="validation">
+    <div style="align-items: center; align-content: center; display: flex; flex-direction: column;">
+        <h2>Game Validation</h2>
+        <div style="align-items: center; align-content: center; display: flex; flex-direction: column; margin-bottom: 10px">
+            <label style="margin-bottom: 5px">
+                Location 1:
+                <input type="checkbox" onclick="return false" id="validationLocation1">
+            </label>
+            <label style="margin-bottom: 5px">
+                Location 2:
+                <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation2">
+            </label>
+            <label style="margin-bottom: 5px">
+                Location 3:
+                <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation3">
+            </label>
+            <label style="margin-bottom: 5px">
+                Location 4:
+                <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation4">
+            </label>
+            <label style="margin-bottom: 5px">
+                Location 5:
+                <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation5">
+            </label>
+            <label style="margin-bottom: 5px">
+                Location 6:
+                <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation6">
+            </label>
+        </div>
+        <div id="completionLabel" style="display: flex; flex-direction: row;">
+            <p style="margin-right: 5px">Completed at:</p>
+            <p id="completionTime" style="font-weight: bold"></p>
+        </div>
+        <p id="validationError" style="display: none"></p>
+        <button id="validateOK">OK</button>
+    </div>
+</dialog>
+<dialog id="esnOverride" class="override">
+    <div style="align-items: center; align-content: center; display: flex; flex-direction: column;">
+        <h2>ESNer Override</h2>
+        <div style="align-items: end; align-content: end; display: flex; flex-direction: column; margin-bottom: 10px">
+            <label style="margin-bottom: 5px">
+                Team Name:
+                <input id="overrideTeam">
+            </label>
+            <label style="margin-bottom: 5px">
+                Location 1:
+                <input id="overrideLocation1">
+            </label>
+            <label style="margin-bottom: 5px">
+                Location 2:
+                <input id="overrideLocation2">
+            </label>
+            <label style="margin-bottom: 5px">
+                Location 3:
+                <input id="overrideLocation3">
+            </label>
+            <label style="margin-bottom: 5px">
+                Location 4:
+                <input id="overrideLocation4">
+            </label>
+            <label style="margin-bottom: 5px">
+                Location 5:
+                <input id="overrideLocation5">
+            </label>
+            <label style="margin-bottom: 5px">
+                Location 6:
+                <input id="overrideLocation6">
+            </label>
+        </div>
+        <p id="overrideError" style="display: none"></p>
+        <div style="align-items: center; align-content: center; display: flex; flex-direction: row;">
+            <button id="overrideExit" style="margin-right: 10px">Exit</button>
+            <button id="overrideOK">OK</button>
+        </div>
+    </div>
+</dialog>
+<script src="js/script.js"></script>
+</body>
+</html>
