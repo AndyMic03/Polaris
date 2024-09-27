@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
     <title>ESN Nicosia | Scavenger Hunt</title>
     <link href="assets/images/favicon.svg" rel="icon">
     <link href="css/style.css" rel="stylesheet">
@@ -37,15 +37,15 @@
      style="align-items: center; align-content: center; display: none; flex-direction: column; padding-bottom: 20px">
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
     <lord-icon
-            src="https://media.lordicon.com/icons/wired/flat/2525-finish-line.json"
+            src="https://cdn.lordicon.com/nnrzfrte.json"
             trigger="in"
             delay="350"
             state="in-reveal"
-            colors="primary:#ebe6ef,secondary:#3a3347,tertiary:#ffc738,quaternary:#f24c00"
+            colors="primary:#ffc738,secondary:#b26836,tertiary:#ebe6ef,quaternary:#7ac143"
             style="width:500px;height:500px">
     </lord-icon>
     <H1 style=";padding-bottom: 10px">Congratulations!</H1>
-    <p style="text-align: center">You have finished the game.<br>Please follow your ESNer's instructions.</p>
+    <p style="text-align: center">You have finished the game.<br>Please submit your score after clicking validate.</p>
 </div>
 <div style="align-items: center; align-content: center; display: flex; flex-direction: column">
     <button id="button" style="height: 75px; width: 150px; margin-bottom: 20px"></button>
@@ -69,29 +69,45 @@
     <div style="align-items: center; align-content: center; display: flex; flex-direction: column;">
         <h2>Game Validation</h2>
         <div style="align-items: center; align-content: center; display: flex; flex-direction: column; margin-bottom: 10px">
-            <label style="margin-bottom: 5px">
+            <label style="margin-bottom: 5px" id="validationContainer0">
                 Location 1:
-                <input type="checkbox" onclick="return false" id="validationLocation1">
+                <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation0">
             </label>
-            <label style="margin-bottom: 5px">
+            <label style="margin-bottom: 5px" id="validationContainer1">
                 Location 2:
+                <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation1">
+            </label>
+            <label style="margin-bottom: 5px" id="validationContainer2">
+                Location 3:
                 <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation2">
             </label>
-            <label style="margin-bottom: 5px">
-                Location 3:
+            <label style="margin-bottom: 5px" id="validationContainer3">
+                Location 4:
                 <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation3">
             </label>
-            <label style="margin-bottom: 5px">
-                Location 4:
+            <label style="margin-bottom: 5px" id="validationContainer4">
+                Location 5:
                 <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation4">
             </label>
-            <label style="margin-bottom: 5px">
-                Location 5:
+            <label style="margin-bottom: 5px" id="validationContainer5">
+                Location 6:
                 <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation5">
             </label>
-            <label style="margin-bottom: 5px">
-                Location 6:
+            <label style="margin-bottom: 5px" id="validationContainer6">
+                Location 7:
                 <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation6">
+            </label>
+            <label style="margin-bottom: 5px" id="validationContainer7">
+                Location 8:
+                <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation7">
+            </label>
+            <label style="margin-bottom: 5px" id="validationContainer8">
+                Location 9:
+                <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation8">
+            </label>
+            <label style="margin-bottom: 5px" id="validationContainer9">
+                Location 10:
+                <input type="checkbox" onclick="return false" style="pointer-events: none" id="validationLocation9">
             </label>
         </div>
         <div id="completionLabel" style="display: flex; flex-direction: row;">
@@ -110,29 +126,45 @@
                 Team Name:
                 <input id="overrideTeam">
             </label>
-            <label style="margin-bottom: 5px">
+            <label style="margin-bottom: 5px" id="overrideContainer0">
                 Location 1:
+                <input id="overrideLocation0">
+            </label>
+            <label style="margin-bottom: 5px" id="overrideContainer1">
+                Location 2:
                 <input id="overrideLocation1">
             </label>
-            <label style="margin-bottom: 5px">
-                Location 2:
+            <label style="margin-bottom: 5px" id="overrideContainer2">
+                Location 3:
                 <input id="overrideLocation2">
             </label>
-            <label style="margin-bottom: 5px">
-                Location 3:
+            <label style="margin-bottom: 5px" id="overrideContainer3">
+                Location 4:
                 <input id="overrideLocation3">
             </label>
-            <label style="margin-bottom: 5px">
-                Location 4:
+            <label style="margin-bottom: 5px" id="overrideContainer4">
+                Location 5:
                 <input id="overrideLocation4">
             </label>
-            <label style="margin-bottom: 5px">
-                Location 5:
+            <label style="margin-bottom: 5px" id="overrideContainer5">
+                Location 6:
                 <input id="overrideLocation5">
             </label>
-            <label style="margin-bottom: 5px">
-                Location 6:
+            <label style="margin-bottom: 5px" id="overrideContainer6">
+                Location 7:
                 <input id="overrideLocation6">
+            </label>
+            <label style="margin-bottom: 5px" id="overrideContainer7">
+                Location 8:
+                <input id="overrideLocation7">
+            </label>
+            <label style="margin-bottom: 5px" id="overrideContainer8">
+                Location 9:
+                <input id="overrideLocation8">
+            </label>
+            <label style="margin-bottom: 5px" id="overrideContainer9">
+                Location 10:
+                <input id="overrideLocation9">
             </label>
         </div>
         <p id="overrideError" style="display: none"></p>
@@ -142,6 +174,6 @@
         </div>
     </div>
 </dialog>
-<script src="js/script.js"></script>
+<script src="js/.script.js"></script>
 </body>
 </html>
