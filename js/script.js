@@ -124,6 +124,7 @@ docReady(function () {
         document.getElementById("button").innerHTML = "Begin";
         document.getElementById("button").addEventListener("click", onboarding);
         document.getElementById("button").addEventListener("touchstart", onboarding);
+        document.title = "Welcome | Scavenger Hunt";
         return;
     }
     if (teamCode === null && locationCode === null) {
@@ -145,6 +146,7 @@ docReady(function () {
         document.getElementById("button").innerHTML = "Validate Result";
         document.getElementById("button").addEventListener("click", validate);
         document.getElementById("button").addEventListener("touchstart", validate);
+        document.title = "Validation | Scavenger Hunt"
         return;
     }
     let locationMatch = false;
@@ -158,6 +160,7 @@ docReady(function () {
         document.getElementById("button").innerHTML = "View Hint";
         document.getElementById("button").addEventListener("click", revealHint);
         document.getElementById("button").addEventListener("touchstart", revealHint);
+        document.title = "Found Hint | Scavenger Hunt"
         return;
     }
     alert(error3);
