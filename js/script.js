@@ -5,6 +5,10 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 let teams = [];
 let locations = [];
 
+const error1 = "Error 1: The URL Arguments are missing or wrong. Please contact the Game Organizer.";
+const error2 = "Error 2: The Website Cookies are missing or wrong. Please contact the Game Organizer.";
+const error3 = "Error 3: Possible URL error. Try rescanning the QR code";
+
 function parseParameters(parametersCsv) {
     const lines = parametersCsv.split('\n');
     lines[0].split(';').forEach(team => {
@@ -123,11 +127,11 @@ docReady(function () {
         return;
     }
     if (teamCode === null && locationCode === null) {
-        alert("Error 1: Please ask your Game Organizer to use their Override Kit.");
+        alert(error1);
         return;
     }
     if (teamCookie === null) {
-        alert("Error 2: Please ask your Game Organizer to use their Override Kit.");
+        alert(error2);
         return;
     }
     let teamMatch = false;
@@ -156,7 +160,7 @@ docReady(function () {
         document.getElementById("button").addEventListener("touchstart", revealHint);
         return;
     }
-    alert("Error 3: Unexpected Condition met. Possible URL error. Try rescanning the QR code");
+    alert(error3);
 });
 
 function onboarding() {
@@ -184,7 +188,9 @@ function onboarding() {
         }
     }
     if (teamIndex === -1) {
-        alert("Error 1: Please ask your Game Organizer to use their Override Kit.");
+        document.getElementById("errorText").innerHTML = error2;
+        document.getElementById("error").showModal();
+        return;
     }
     let txt = textHints[teamIndex][0];
     let img = imageHints[teamIndex][0];
@@ -208,7 +214,7 @@ function revealHint() {
         }
     });
     if (!teamMatch) {
-        document.getElementById("errorText").innerHTML = "Error 1: Please ask your Game Organizer to use their Override Kit.";
+        document.getElementById("errorText").innerHTML = error1;
         document.getElementById("error").showModal();
         return;
     }
@@ -255,7 +261,8 @@ function revealHint() {
         }
     }
     if (invalidLocation || invalidTeam) {
-        alert("Error 1: Invalid team or location tags.");
+        document.getElementById("errorText").innerHTML = error1;
+        document.getElementById("error").showModal();
     }
 }
 
