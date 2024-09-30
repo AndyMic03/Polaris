@@ -14,10 +14,10 @@ function parseParameters(parametersCsv) {
     const lines = parametersCsv.split('\n');
     eventName = lines[0];
     lines[1].split(';').forEach(team => {
-        teams.push(team)
+        teams.push(team);
     });
     lines[2].split(';').forEach(location => {
-        locations.push(location)
+        locations.push(location);
     });
     localStorage.setItem("teams", JSON.stringify(teams));
     localStorage.setItem("locations", JSON.stringify(locations));
@@ -61,11 +61,13 @@ docReady(async function () {
     if (localStorage.getItem("teams") === null || localStorage.getItem("locations") === null) {
         await (await fetch("assets/game/gameParameters.csv")).text().then(function (text) {
             parseParameters(text);
+            initialization();
         });
     } else {
         locations = JSON.parse(localStorage.getItem("locations"));
         teams = JSON.parse(localStorage.getItem("teams"));
         eventName = localStorage.getItem("eventName");
+        initialization();
     }
     if (localStorage.getItem("textHints") === null) {
         await (await fetch("assets/game/textHints.csv")).text().then(function (text) {
@@ -85,7 +87,6 @@ docReady(async function () {
     }
     let date = new Date();
     document.getElementById("footer").innerHTML = "&copy" + date.getFullYear() + " <b>Andreas Michael</b>";
-    initialization();
 });
 
 function getCookie(cName) {
