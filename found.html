@@ -8,6 +8,15 @@
     <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
+<div id="welcome"
+     style="align-items: center; align-content: center; display: none; flex-direction: column; padding-bottom: 20px">
+    <img alt="ESN Logo" src="/assets/images/logo.svg" style="width: 500px; margin-top: 5px">
+    <H1 style=";padding-bottom: 10px">Welcome!</H1>
+    <p id="greeting"  style="text-align: center"></p>
+    <label>
+        <input id="team" style="display: inline; width: 400px; height: 40px; font-size: 18pt">
+    </label>
+</div>
 <div id="congratulations"
      style="align-items: center; align-content: center; display: none; flex-direction: column; padding-bottom: 20px">
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
@@ -22,16 +31,6 @@
     <H1 style=";padding-bottom: 10px">Congratulations!</H1>
     <p style="text-align: center">You have at arrived at your next clue.<br>Please click the button below to see your
         clue.</p>
-</div>
-<div id="welcome"
-     style="align-items: center; align-content: center; display: none; flex-direction: column; padding-bottom: 20px">
-    <img alt="ESN Logo" src="/assets/images/logo.png" style="width: 500px">
-    <H1 style=";padding-bottom: 10px">Welcome!</H1>
-    <p style="text-align: center">We would like to welcome you to the ESN Scavenger Hunt.<br>Please enter your
-        designated team name to begin.</p>
-    <label>
-        <input id="team" style="display: inline; width: 400px; height: 40px; font-size: 18pt">
-    </label>
 </div>
 <div id="finish"
      style="align-items: center; align-content: center; display: none; flex-direction: column; padding-bottom: 20px">
@@ -51,7 +50,7 @@
     <button id="button" style="height: 75px; width: 150px; margin-bottom: 20px"></button>
     <a onclick="openOverride()">Game Override</a>
 </div>
-<footer>&copy2024 <b>Andreas Michael</b></footer>
+<footer id="footer"></footer>
 <dialog id="hint">
     <div style="align-items: center; align-content: center; display: flex; flex-direction: column;">
         <p id="hintText" style="text-align: center; display: none"></p>

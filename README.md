@@ -51,6 +51,7 @@ Key features include QR code integration for location-based interaction, dynamic
 ### Game Parameters
 
 ```
+Event Name
 Team 1;Team 2;Team 3;...
 Location 1;Location 2;Location 3;...
 ```

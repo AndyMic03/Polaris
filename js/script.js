@@ -4,6 +4,7 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 
 let teams = [];
 let locations = [];
+let eventName;
 
 const error1 = "Error 1: The URL Arguments are missing or wrong. Please contact the Game Organizer.";
 const error2 = "Error 2: The Website Cookies are missing or wrong. Please contact the Game Organizer.";
@@ -11,14 +12,16 @@ const error3 = "Error 3: Possible URL error. Try rescanning the QR code";
 
 function parseParameters(parametersCsv) {
     const lines = parametersCsv.split('\n');
-    lines[0].split(';').forEach(team => {
+    eventName = lines[0];
+    lines[1].split(';').forEach(team => {
         teams.push(team)
     });
-    lines[1].split(';').forEach(location => {
+    lines[2].split(';').forEach(location => {
         locations.push(location)
     });
     localStorage.setItem("teams", JSON.stringify(teams));
     localStorage.setItem("locations", JSON.stringify(locations));
+    localStorage.setItem("eventName", eventName);
 }
 
 function parseHints(hintsCsv) {
@@ -62,6 +65,7 @@ docReady(async function () {
     } else {
         locations = JSON.parse(localStorage.getItem("locations"));
         teams = JSON.parse(localStorage.getItem("teams"));
+        eventName = localStorage.getItem("eventName");
     }
     if (localStorage.getItem("textHints") === null) {
         await (await fetch("assets/game/textHints.csv")).text().then(function (text) {
@@ -79,6 +83,9 @@ docReady(async function () {
     } else {
         imageHints = JSON.parse(localStorage.getItem("imageHints"));
     }
+    let date = new Date();
+    document.getElementById("footer").innerHTML = "&copy" + date.getFullYear() + " <b>Andreas Michael</b>";
+    initialization();
 });
 
 function getCookie(cName) {
@@ -118,12 +125,13 @@ docReady(function () {
     document.getElementById("errorOK").addEventListener("touchstart", closeDialog);
 })
 
-docReady(function () {
+function initialization () {
     if (teamCode === "welcome" && locationCode === "welcome") {
         document.getElementById("welcome").style.display = "flex";
         document.getElementById("button").innerHTML = "Begin";
         document.getElementById("button").addEventListener("click", onboarding);
         document.getElementById("button").addEventListener("touchstart", onboarding);
+        document.getElementById("greeting").innerHTML = "We would like to welcome you to the " + eventName + ".<br>Please enter your designated team name to begin.";
         document.title = "Welcome | Scavenger Hunt";
         return;
     }
@@ -164,7 +172,7 @@ docReady(function () {
         return;
     }
     alert(error3);
-});
+}
 
 function onboarding() {
     let eTeam = document.getElementById("team").value;
