@@ -10,19 +10,6 @@ const error1 = "Error 1: The URL Arguments are missing or wrong. Please contact 
 const error2 = "Error 2: The Website Cookies are missing or wrong. Please contact the Game Organizer.";
 const error3 = "Error 3: Possible URL error. Try rescanning the QR code";
 
-function parseParameters(parametersCsv) {
-    const lines = parametersCsv.split('\n');
-    eventName = lines[0];
-    lines[1].split(';').forEach(team => {
-        teams.push(team);
-    });
-    lines[2].split(';').forEach(location => {
-        locations.push(location);
-    });
-    localStorage.setItem("teams", JSON.stringify(teams));
-    localStorage.setItem("locations", JSON.stringify(locations));
-    localStorage.setItem("eventName", eventName);
-}
 
 function parseHints(hintsCsv) {
     let array = [];
@@ -58,9 +45,28 @@ let textHints;
 let imageHints;
 
 docReady(async function () {
+    if (Date.now() - localStorage.getItem('createdTimestamp') > 86400000) {
+        localStorage.clear();
+        document.cookie.split(';').forEach(cookie => {
+            const eqPos = cookie.indexOf('=');
+            const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+            document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        });
+    }
     if (localStorage.getItem("teams") === null || localStorage.getItem("locations") === null) {
         await (await fetch("assets/game/gameParameters.csv")).text().then(function (text) {
-            parseParameters(text);
+            const lines = text.split('\n');
+            eventName = lines[0];
+            lines[1].split(';').forEach(team => {
+                teams.push(team);
+            });
+            lines[2].split(';').forEach(location => {
+                locations.push(location);
+            });
+            localStorage.setItem("teams", JSON.stringify(teams));
+            localStorage.setItem("locations", JSON.stringify(locations));
+            localStorage.setItem("eventName", eventName);
+            localStorage.setItem("createdTimestamp", Date.now().toString());
             initialization();
         });
     } else {
@@ -126,7 +132,7 @@ docReady(function () {
     document.getElementById("errorOK").addEventListener("touchstart", closeDialog);
 })
 
-function initialization () {
+function initialization() {
     if (teamCode === "welcome" && locationCode === "welcome") {
         document.getElementById("welcome").style.display = "flex";
         document.getElementById("button").innerHTML = "Begin";
