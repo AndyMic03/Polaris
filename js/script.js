@@ -47,11 +47,6 @@ let imageHints;
 docReady(async function () {
     if (Date.now() - localStorage.getItem('createdTimestamp') > 86400000) {
         localStorage.clear();
-        document.cookie.split(';').forEach(cookie => {
-            const eqPos = cookie.indexOf('=');
-            const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
-            document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        });
     }
     if (localStorage.getItem("teams") === null || localStorage.getItem("locations") === null) {
         await (await fetch("assets/game/gameParameters.csv")).text().then(function (text) {
@@ -196,7 +191,7 @@ function onboarding() {
         document.getElementById("error").showModal();
         return;
     }
-    setCookie("Team", eTeam, 10);
+    setCookie("Team", eTeam, 1);
     teamCookie = getCookie("Team");
     let teamIndex = -1;
     for (let i = 0; i < teams.length - 1; i++) {
@@ -258,7 +253,7 @@ function revealHint() {
                 document.getElementById("error").showModal();
                 return;
             }
-            setCookie(locations[i], "Granted", 10);
+            setCookie(locations[i], "Granted", 1);
             for (let j = 0; j < teams.length; j++) {
                 if (teamCode === teams[j]) {
                     invalidTeam = false;
@@ -301,7 +296,7 @@ function validate() {
     if (s < 10)
         s = "0" + s;
     let completionCounter = locations.length;
-    setCookie(locations[locations.length - 1], "Granted", 10);
+    setCookie(locations[locations.length - 1], "Granted", 1);
     if (validateCompleted)
         document.getElementById("validationParent").innerHTML = "";
     for (let i = 0; i < locations.length; i++) {
@@ -360,7 +355,7 @@ function override() {
         setCookie("Team", overrideTeam, 10);
     for (let i = 0; i < locations.length; i++) {
         if (document.getElementById("overrideLocation" + i).value !== "")
-            setCookie(document.getElementById("overrideLocation" + i), "Granted", 10);
+            setCookie(document.getElementById("overrideLocation" + i), "Granted", 1);
     }
     closeDialog();
 }
