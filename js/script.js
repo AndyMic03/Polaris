@@ -42,6 +42,7 @@ let validateCompleted = false;
 
 
 let textHints;
+let textChallenges;
 let imageHints;
 
 docReady(async function () {
@@ -77,6 +78,14 @@ docReady(async function () {
         });
     } else {
         textHints = JSON.parse(localStorage.getItem("textHints"));
+    }
+    if (localStorage.getItem("textChallenges") === null) {
+        await (await fetch("assets/game/textChallenges.csv")).text().then(function (text) {
+            textChallenges = text.split("\n");
+            localStorage.setItem("textChallenges", JSON.stringify(textChallenges));
+        });
+    } else {
+        textChallenges = JSON.parse(localStorage.getItem("textChallenges"));
     }
     if (localStorage.getItem("imageHints") === null) {
         await (await fetch("assets/game/imageHints.csv")).text().then(function (text) {
@@ -148,7 +157,7 @@ function initialization() {
     let teamMatch = false;
     teams.forEach(team => {
         if (teamCode === team) {
-            teamMatch = true
+            teamMatch = true;
         }
     });
     if (teamMatch && locationCode === locations[locations.length - 1]) {
@@ -162,7 +171,7 @@ function initialization() {
     let locationMatch = false;
     locations.forEach(location => {
         if (locationCode === location) {
-            locationMatch = true
+            locationMatch = true;
         }
     });
     if (teamCookie && locationMatch) {
@@ -194,7 +203,7 @@ function onboarding() {
     setCookie("Team", eTeam, 1);
     teamCookie = getCookie("Team");
     let teamIndex = -1;
-    for (let i = 0; i < teams.length - 1; i++) {
+    for (let i = 0; i < teams.length; i++) {
         if (teamCookie === teams[i]) {
             teamIndex = i;
             break;
@@ -207,6 +216,7 @@ function onboarding() {
     }
     let txt = textHints[teamIndex][0];
     let img = imageHints[teamIndex][0];
+    let chl = textChallenges[0];
     if (txt !== "NULL" && txt !== "") {
         document.getElementById("hintText").style.display = "inline";
         document.getElementById("hintText").innerHTML = txt;
@@ -214,6 +224,10 @@ function onboarding() {
     if (img !== "NULL" && img !== "") {
         document.getElementById("hintImage").style.display = "inline";
         document.getElementById("hintImage").source = img;
+    }
+    if (chl !== "NULL") {
+        document.getElementById("challengeContainer").style.display = "inline";
+        document.getElementById("challengeText").innerHTML = chl;
     }
     document.getElementById("hint").showModal();
 }
@@ -259,6 +273,7 @@ function revealHint() {
                     invalidTeam = false;
                     let txt = textHints[j][i + 1];
                     let img = imageHints[j][i + 1];
+                    let chl = textChallenges[i + 1];
                     if (txt !== "NULL" && txt !== "") {
                         document.getElementById("hintText").style.display = "inline";
                         document.getElementById("hintText").innerHTML = txt;
@@ -266,6 +281,10 @@ function revealHint() {
                     if (img !== "NULL" && img !== "") {
                         document.getElementById("hintImage").style.display = "inline";
                         document.getElementById("hintImage").source = img;
+                    }
+                    if (chl !== "NULL") {
+                        document.getElementById("challengeContainer").style.display = "inline";
+                        document.getElementById("challengeText").innerHTML = chl;
                     }
                     document.getElementById("hint").showModal();
                     return;

@@ -12,7 +12,7 @@
      style="align-items: center; align-content: center; display: none; flex-direction: column; padding-bottom: 20px">
     <img alt="ESN Logo" src="/assets/images/logo.svg" style="width: 500px; margin-top: 5px">
     <H1 style=";padding-bottom: 10px">Welcome!</H1>
-    <p id="greeting"  style="text-align: center"></p>
+    <p id="greeting" style="text-align: center"></p>
     <label>
         <input id="team" style="display: inline; width: 400px; height: 40px; font-size: 18pt">
     </label>
@@ -53,9 +53,15 @@
 <footer id="footer"></footer>
 <dialog id="hint">
     <div style="align-items: center; align-content: center; display: flex; flex-direction: column;">
-        <p id="hintText" style="text-align: center; display: none"></p>
-        <img alt="" id="hintImage" src="" style="display: none">
-        <button id="hintOK" style="padding-top: 10px">OK</button>
+        <div id="challengeContainer" style="display: none; margin: 0;">
+            <p style="text-align: center; margin: 0; padding-bottom: 5px"><b>Challenge</b><br></p>
+            <p id="challengeText" style="text-align: center;  margin: 0 0 10px;"></p>
+            <hr>
+        </div>
+        <p style="text-align: center; margin: 0;; padding-bottom: 5px"><b>Clue</b><br></p>
+        <p id="hintText" style="text-align: center; display: none; margin: 0 0 10px;"></p>
+        <img alt="" id="hintImage" src="" style="display: none; margin: 0 0 10px;">
+        <button id="hintOK">OK</button>
     </div>
 </dialog>
 <dialog id="error">
