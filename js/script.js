@@ -218,7 +218,7 @@ function onboarding() {
     let img = imageHints[teamIndex][0];
     let chl = textChallenges[0];
     if (txt !== "NULL" && txt !== "") {
-        document.getElementById("hintText").style.display = "inline";
+        document.getElementById("hintContainer").style.display = "inline";
         document.getElementById("hintText").innerHTML = txt;
     }
     if (img !== "NULL" && img !== "") {
@@ -275,7 +275,7 @@ function revealHint() {
                     let img = imageHints[j][i + 1];
                     let chl = textChallenges[i + 1];
                     if (txt !== "NULL" && txt !== "") {
-                        document.getElementById("hintText").style.display = "inline";
+                        document.getElementById("hintContainer").style.display = "inline";
                         document.getElementById("hintText").innerHTML = txt;
                     }
                     if (img !== "NULL" && img !== "") {
