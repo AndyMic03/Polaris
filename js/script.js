@@ -37,20 +37,39 @@ const locationCode = params.location;
 
 let teamCookie = getCookie("Team");
 
-let overrideCompleted = false;
-let validateCompleted = false;
-
-
 let textHints;
 let textChallenges;
 let imageHints;
 
-docReady(async function () {
+function getCookie(cName) {
+    let name = cName + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) === 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function setCookie(cName, cValue, exDays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exDays * 86400000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cName + "=" + cValue + ";" + expires + ";path=/";
+}
+
+docReady(async () => {
     if (Date.now() - localStorage.getItem('createdTimestamp') > 86400000) {
         localStorage.clear();
     }
     if (localStorage.getItem("teams") === null || localStorage.getItem("locations") === null) {
-        await (await fetch("assets/game/gameParameters.csv")).text().then(function (text) {
+        await (await fetch("assets/game/gameParameters.csv")).text().then((text) => {
             const lines = text.split('\n');
             eventName = lines[0];
             lines[1].split(';').forEach(team => {
@@ -72,7 +91,7 @@ docReady(async function () {
         initialization();
     }
     if (localStorage.getItem("textHints") === null) {
-        await (await fetch("assets/game/textHints.csv")).text().then(function (text) {
+        await (await fetch("assets/game/textHints.csv")).text().then((text) => {
             textHints = parseHints(text);
             localStorage.setItem("textHints", JSON.stringify(textHints));
         });
@@ -80,7 +99,7 @@ docReady(async function () {
         textHints = JSON.parse(localStorage.getItem("textHints"));
     }
     if (localStorage.getItem("textChallenges") === null) {
-        await (await fetch("assets/game/textChallenges.csv")).text().then(function (text) {
+        await (await fetch("assets/game/textChallenges.csv")).text().then((text) => {
             textChallenges = text.split("\n");
             localStorage.setItem("textChallenges", JSON.stringify(textChallenges));
         });
@@ -88,180 +107,145 @@ docReady(async function () {
         textChallenges = JSON.parse(localStorage.getItem("textChallenges"));
     }
     if (localStorage.getItem("imageHints") === null) {
-        await (await fetch("assets/game/imageHints.csv")).text().then(function (text) {
+        await (await fetch("assets/game/imageHints.csv")).text().then((text) => {
             imageHints = parseHints(text);
             localStorage.setItem("imageHints", JSON.stringify(imageHints));
         });
     } else {
         imageHints = JSON.parse(localStorage.getItem("imageHints"));
     }
-    let date = new Date();
-    document.getElementById("footer").innerHTML = "&copy" + date.getFullYear() + " <b>Andreas Michael</b>";
 });
-
-function getCookie(cName) {
-    let name = cName + "=";
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) === 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
-}
-
-function setCookie(cName, cValue, exDays) {
-    const d = new Date();
-    d.setTime(d.getTime() + (exDays * 24 * 60 * 60 * 1000));
-    let expires = "expires=" + d.toUTCString();
-    document.cookie = cName + "=" + cValue + ";" + expires + ";path=/";
-}
 
 docReady(function () {
     document.getElementById("overrideOK").addEventListener("click", override);
-    document.getElementById("overrideExit").addEventListener("click", closeDialog);
-    document.getElementById("validateOK").addEventListener("click", closeDialog);
-    document.getElementById("hintOK").addEventListener("click", closeDialog);
-    document.getElementById("errorOK").addEventListener("click", closeDialog);
-
-    document.getElementById("overrideOK").addEventListener("touchstart", override);
-    document.getElementById("overrideExit").addEventListener("touchstart", closeDialog);
-    document.getElementById("validateOK").addEventListener("touchstart", closeDialog);
-    document.getElementById("hintOK").addEventListener("touchstart", closeDialog);
-    document.getElementById("errorOK").addEventListener("touchstart", closeDialog);
+    document.getElementById("overrideExit").addEventListener("click", closeDialogs);
+    document.getElementById("validateOK").addEventListener("click", closeDialogs);
+    document.getElementById("hintOK").addEventListener("click", closeDialogs);
+    document.getElementById("errorOK").addEventListener("click", closeDialogs);
 })
 
 function initialization() {
-    if (teamCode === "welcome" && locationCode === "welcome") {
+    if (teamCode === null && locationCode === null) {
         document.getElementById("welcome").style.display = "flex";
         document.getElementById("button").innerHTML = "Begin";
         document.getElementById("button").addEventListener("click", onboarding);
-        document.getElementById("button").addEventListener("touchstart", onboarding);
         document.getElementById("greeting").innerHTML = "We would like to welcome you to the " + eventName + ".<br>Please enter your designated team name to begin.";
         document.title = "Welcome | Scavenger Hunt";
         return;
     }
-    if (teamCode === null && locationCode === null) {
-        alert(error1);
-        return;
-    }
-    if (teamCookie === null) {
+    if (teamCookie === "") {
         alert(error2);
+        document.location.href = "./game.html";
         return;
     }
+
     let teamMatch = false;
-    teams.forEach(team => {
-        if (teamCode === team) {
+    for (const team of teams)
+        if (teamCode === team)
             teamMatch = true;
-        }
-    });
+
+    let locationMatch = false;
+    for (const location of locations)
+        if (locationCode === location)
+            locationMatch = true;
+
+    if (!teamMatch || !locationMatch) {
+        document.body.removeChild(document.getElementById("button"));
+        alert(error3);
+        return;
+    }
+
     if (teamMatch && locationCode === locations[locations.length - 1]) {
         document.getElementById("finish").style.display = "flex";
         document.getElementById("button").innerHTML = "Validate Result";
         document.getElementById("button").addEventListener("click", validate);
-        document.getElementById("button").addEventListener("touchstart", validate);
         document.title = "Validation | Scavenger Hunt"
         return;
     }
-    let locationMatch = false;
-    locations.forEach(location => {
-        if (locationCode === location) {
-            locationMatch = true;
-        }
-    });
-    if (teamCookie && locationMatch) {
-        document.getElementById("congratulations").style.display = "flex";
-        document.getElementById("button").innerHTML = "View Hint";
-        document.getElementById("button").addEventListener("click", revealHint);
-        document.getElementById("button").addEventListener("touchstart", revealHint);
-        document.title = "Found Hint | Scavenger Hunt"
-        return;
+
+    document.getElementById("congratulations").style.display = "flex";
+    document.getElementById("button").innerHTML = "View Hint";
+    document.getElementById("button").addEventListener("click", hint);
+    document.title = "Found Hint | Scavenger Hunt"
+}
+
+function renderHint(text, image, challenge) {
+    if (text !== "NULL" && text !== "") {
+        document.getElementById("hintContainer").style.display = "inline";
+        document.getElementById("hintText").innerHTML = text;
     }
-    alert(error3);
+    if (image !== "NULL" && image !== "") {
+        document.getElementById("hintImage").style.display = "inline";
+        document.getElementById("hintImage").src = image;
+    }
+    if (challenge !== "NULL" && challenge !== "") {
+        document.getElementById("challengeContainer").style.display = "inline";
+        document.getElementById("challengeText").innerHTML = challenge;
+    }
+    document.getElementById("hint").showModal();
 }
 
 function onboarding() {
-    let eTeam = document.getElementById("team").value;
-    if (eTeam === "")
+    let inputTeam = document.getElementById("team").value;
+    if (inputTeam === "")
         return;
+
     let teamMatch = false;
-    teams.forEach(team => {
-        if (eTeam === team) {
-            teamMatch = true
-        }
-    });
+    for (const team of teams)
+        if (team === inputTeam)
+            teamMatch = true;
     if (!teamMatch) {
         document.getElementById("errorText").innerHTML = "Team Name Invalid";
         document.getElementById("error").showModal();
         return;
     }
-    setCookie("Team", eTeam, 1);
+
+    setCookie("Team", inputTeam, 1);
     teamCookie = getCookie("Team");
     let teamIndex = -1;
-    for (let i = 0; i < teams.length; i++) {
-        if (teamCookie === teams[i]) {
+    for (let i = 0; i < teams.length; i++)
+        if (teamCookie === teams[i])
             teamIndex = i;
-            break;
-        }
-    }
     if (teamIndex === -1) {
         document.getElementById("errorText").innerHTML = error2;
         document.getElementById("error").showModal();
         return;
     }
-    let txt = textHints[teamIndex][0];
-    let img = imageHints[teamIndex][0];
-    let chl = textChallenges[0];
-    if (txt !== "NULL" && txt !== "") {
-        document.getElementById("hintContainer").style.display = "inline";
-        document.getElementById("hintText").innerHTML = txt;
-    }
-    if (img !== "NULL" && img !== "") {
-        document.getElementById("hintImage").style.display = "inline";
-        document.getElementById("hintImage").source = img;
-    }
-    if (chl !== "NULL") {
-        document.getElementById("challengeContainer").style.display = "inline";
-        document.getElementById("challengeText").innerHTML = chl;
-    }
-    document.getElementById("hint").showModal();
+    let text = textHints[teamIndex][0];
+    let image = imageHints[teamIndex][0];
+    let challenge = textChallenges[0];
+    renderHint(text, image, challenge);
 }
 
-function revealHint() {
+function hint() {
     teamCookie = getCookie("Team");
     let teamMatch = false;
-    teams.forEach(team => {
-        if (teamCode === team) {
-            teamMatch = true
-        }
-    });
+    for (const team of teams)
+        if (teamCode === team)
+            teamMatch = true;
     if (!teamMatch) {
         document.getElementById("errorText").innerHTML = error1;
         document.getElementById("error").showModal();
         return;
     }
+
     if (teamCookie !== teamCode) {
         document.getElementById("errorText").innerHTML = "This clue is not meant for your team.<br>Keep looking.";
         document.getElementById("error").showModal();
         return;
     }
+
     let invalidLocation = true;
     let invalidTeam = true;
     for (let i = 0; i < locations.length; i++) {
         if (locationCode === locations[i]) {
             invalidLocation = false;
             let missingLocation = false;
-            if (i !== 0) {
-                for (let j = 0; j < i; j++) {
+            if (i !== 0)
+                for (let j = 0; j < i; j++)
                     if (getCookie(locations[j]) !== "Granted")
                         missingLocation = true;
-                }
-            }
+
             if (missingLocation) {
                 document.getElementById("errorText").innerHTML = "You're not supposed to be here yet.<br>Keep looking.";
                 document.getElementById("error").showModal();
@@ -271,22 +255,10 @@ function revealHint() {
             for (let j = 0; j < teams.length; j++) {
                 if (teamCode === teams[j]) {
                     invalidTeam = false;
-                    let txt = textHints[j][i + 1];
-                    let img = imageHints[j][i + 1];
-                    let chl = textChallenges[i + 1];
-                    if (txt !== "NULL" && txt !== "") {
-                        document.getElementById("hintContainer").style.display = "inline";
-                        document.getElementById("hintText").innerHTML = txt;
-                    }
-                    if (img !== "NULL" && img !== "") {
-                        document.getElementById("hintImage").style.display = "inline";
-                        document.getElementById("hintImage").source = img;
-                    }
-                    if (chl !== "NULL") {
-                        document.getElementById("challengeContainer").style.display = "inline";
-                        document.getElementById("challengeText").innerHTML = chl;
-                    }
-                    document.getElementById("hint").showModal();
+                    let text = textHints[j][i + 1];
+                    let image = imageHints[j][i + 1];
+                    let challenge = textChallenges[i + 1];
+                    renderHint(text, image, challenge);
                     return;
                 }
             }
@@ -304,56 +276,48 @@ function validate() {
         document.getElementById("error").showModal();
         return;
     }
-    let d = new Date(); // for now
-    let h = d.getHours();
-    let m = d.getMinutes();
-    let s = d.getSeconds();
-    if (h < 10)
-        h = "0" + h;
-    if (m < 10)
-        m = "0" + m;
-    if (s < 10)
-        s = "0" + s;
+
+    let d = new Date();
+    let h = String(d.getHours()).padStart(2, "0");
+    let m = String(d.getMinutes()).padStart(2, "0");
+    let s = String(d.getSeconds()).padStart(2, "0");
+    document.getElementById("completionTime").innerHTML = h + ":" + m + ":" + s;
     let completionCounter = locations.length;
     setCookie(locations[locations.length - 1], "Granted", 1);
-    if (validateCompleted)
-        document.getElementById("validationParent").innerHTML = "";
+
+    document.getElementById("validationParent").innerHTML = "";
     for (let i = 0; i < locations.length; i++) {
         const label = document.createElement("label");
         label.style.marginBottom = "5px";
+        label.innerHTML = "Location " + (i + 1) + ":";
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.style.pointerEvents = "none";
-        checkbox.onclick = function () {
+        checkbox.onclick = () => {
             return false;
         }
         if (getCookie(locations[i]) === "Granted") {
             completionCounter--;
             checkbox.checked = true;
-        } else {
+        } else
             checkbox.checked = false;
-        }
 
-        label.innerHTML = "Location " + (i + 1) + ":";
         label.appendChild(checkbox);
         document.getElementById("validationParent").appendChild(label);
     }
-    validateCompleted = true;
-    document.getElementById("completionTime").innerHTML = h + ":" + m + ":" + s;
     if (completionCounter > 0) {
         document.getElementById("completionLabel").style.display = "none";
         document.getElementById("validationError").innerHTML = "You haven't found all the clues";
         document.getElementById("validationError").style.display = "inline";
     }
+
     document.getElementById("validation").showModal();
 }
 
-function openOverride() {
+function renderOverride() {
+    document.getElementById("overrideParent").innerHTML = "";
     for (let i = 0; i < locations.length; i++) {
-        if (overrideCompleted)
-            break;
-
         const label = document.createElement("label");
         label.style.marginBottom = "5px";
 
@@ -362,9 +326,8 @@ function openOverride() {
 
         label.innerHTML = "Location " + (i + 1) + ": ";
         label.appendChild(input);
-        document.getElementById("overrideParent").insertBefore(label, document.getElementById("overrideAnchor"));
+        document.getElementById("overrideParent").appendChild(label);
     }
-    overrideCompleted = true;
     document.getElementById("override").showModal();
 }
 
@@ -376,10 +339,10 @@ function override() {
         if (document.getElementById("overrideLocation" + i).value !== "")
             setCookie(document.getElementById("overrideLocation" + i), "Granted", 1);
     }
-    closeDialog();
+    closeDialogs();
 }
 
-function closeDialog() {
+function closeDialogs() {
     document.getElementById("error").close();
     document.getElementById("hint").close();
     document.getElementById("validation").close();

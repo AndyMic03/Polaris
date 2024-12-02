@@ -1,8 +1,13 @@
-# Scavenger Hunt Game
+<h1 align="center">
+    <img src="./assets/images/polarisLogo.svg" height="200" alt=""/><br>
+    Polaris
+</h1>
 
 This project implements a web-based Scavenger Hunt game designed to be played in physical locations. Players, organized into teams, scan QR codes at various locations to progress through the game. The game utilizes HTML for the user interface, JavaScript for game logic and data handling, and CSV files to store game parameters, team information, and location-based hints. The CSS file provides styling for the visual elements of the game.
 
-Key features include QR code integration for location-based interaction, dynamic content updates based on game progress, and the use of cookies to maintain persistent user data. The game also incorporates error handling and a "Game Override" feature for testing and debugging purposes.
+Key features include QR code integration for location-based interaction, dynamic content updates based on game progress,
+and the use of cookies to maintain persistent user data. The game also incorporates error handling and a "Game Override"
+feature for on the field troubleshooting.
 
 ## Core Components
 
@@ -13,14 +18,16 @@ Key features include QR code integration for location-based interaction, dynamic
    
 2. JavaScript (script.js)
    - Logic and Control: The JavaScript file handles the game's core logic, controlling the flow of the game, validating user input, and managing the display of hints and clues.
-   - Data Handling: It interacts with CSV files to retrieve game parameters, team information, location data, and hints.
+   - Data Handling: It interacts with CSV files to retrieve game parameters, team information, location data, hints, and
+     challenges.
    - Cookies: Cookies are used to store persistent data, such as the selected team and progress through locations.
    - URL Parameters: The script parses URL parameters to determine the team and current location, enabling QR code scanning for location-based clues.
 
 3. CSV Data Files
-   - gameParameters.csv: Stores the list of teams and locations in the game.
-   - textHints.csv: Contains textual hints and challenges associated with each location and team.
+   - gameParameters.csv: Stores the list of teams and locations in the game and the game name.
+   - textHints.csv: Contains textual hints associated with each location and team.
    - imageHints.csv: Holds image-based hints corresponding to locations and teams.
+   - textChallenges.csv: Contains textual challenges corresponding to locations and teams.
 
 ## Game Flow
 
@@ -62,6 +69,14 @@ This section applies to both text and image hints.
 ```
 Location 1 Hint;Location 2 Hint;... (Team 1)
 Location 1 Hint;Location 2 Hint;... (Team 2)
+...
+```
+
+### Challenges
+
+```
+Location 1 Challenge;Location 2 Challenge;... (Team 1)
+Location 1 Challenge;Location 2 Challenge;... (Team 2)
 ...
 ```
 
