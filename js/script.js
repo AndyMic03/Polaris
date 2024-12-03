@@ -2,25 +2,24 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
     get: (searchParams, prop) => searchParams.get(prop),
 });
 
-let teams = [];
-let locations = [];
-let eventName;
-
 const error1 = "Error 1: The URL Arguments are missing or wrong. Please contact the Game Organizer.";
-const error2 = "Error 2: The Website Cookies are missing or wrong. Please contact the Game Organizer.";
-const error3 = "Error 3: Possible URL error. Try rescanning the QR code";
+const error2 = "Error 2: The website Cookies are missing or wrong. Please contact the Game Organizer.";
 
-
-function parseHints(hintsCsv) {
+function parseHints(hintsCsv, teamName) {
     let array = [];
-    const lines = hintsCsv.split('\n');
+    const lines = hintsCsv.split("\n");
     for (let i = 0; i < lines.length; i++) {
-        array[i] = [];
-        const records = lines[i].split(';');
-        for (let j = 0; j < records.length; j++) {
-            array[i][j] = records[j];
-        }
+        const records = lines[i].split(";");
+        if (i > 0 && records[0] !== teamName)
+            continue;
+        array.push([]);
+        for (let j = 0; j < records.length; j++)
+            array[array.length - 1][j] = records[j];
+        if (i > 0)
+            break;
     }
+    if (array.length !== 2)
+        return [];
     return array;
 }
 
@@ -31,15 +30,6 @@ function docReady(fn) {
         document.addEventListener("DOMContentLoaded", fn);
     }
 }
-
-const teamCode = params.team;
-const locationCode = params.location;
-
-let teamCookie = getCookie("Team");
-
-let textHints;
-let textChallenges;
-let imageHints;
 
 function getCookie(cName) {
     let name = cName + "=";
@@ -68,64 +58,18 @@ docReady(async () => {
     if (Date.now() - localStorage.getItem('createdTimestamp') > 86400000) {
         localStorage.clear();
     }
-    if (localStorage.getItem("teams") === null || localStorage.getItem("locations") === null) {
-        await (await fetch("assets/game/gameParameters.csv")).text().then((text) => {
-            const lines = text.split('\n');
-            eventName = lines[0];
-            lines[1].split(';').forEach(team => {
-                teams.push(team);
-            });
-            lines[2].split(';').forEach(location => {
-                locations.push(location);
-            });
-            localStorage.setItem("teams", JSON.stringify(teams));
-            localStorage.setItem("locations", JSON.stringify(locations));
-            localStorage.setItem("eventName", eventName);
-            localStorage.setItem("createdTimestamp", Date.now().toString());
-            initialization();
-        });
-    } else {
-        locations = JSON.parse(localStorage.getItem("locations"));
-        teams = JSON.parse(localStorage.getItem("teams"));
-        eventName = localStorage.getItem("eventName");
-        initialization();
-    }
-    if (localStorage.getItem("textHints") === null) {
-        await (await fetch("assets/game/textHints.csv")).text().then((text) => {
-            textHints = parseHints(text);
-            localStorage.setItem("textHints", JSON.stringify(textHints));
-        });
-    } else {
-        textHints = JSON.parse(localStorage.getItem("textHints"));
-    }
-    if (localStorage.getItem("textChallenges") === null) {
-        await (await fetch("assets/game/textChallenges.csv")).text().then((text) => {
-            textChallenges = text.split("\n");
-            localStorage.setItem("textChallenges", JSON.stringify(textChallenges));
-        });
-    } else {
-        textChallenges = JSON.parse(localStorage.getItem("textChallenges"));
-    }
-    if (localStorage.getItem("imageHints") === null) {
-        await (await fetch("assets/game/imageHints.csv")).text().then((text) => {
-            imageHints = parseHints(text);
-            localStorage.setItem("imageHints", JSON.stringify(imageHints));
-        });
-    } else {
-        imageHints = JSON.parse(localStorage.getItem("imageHints"));
-    }
-});
-
-docReady(function () {
     document.getElementById("overrideOK").addEventListener("click", override);
     document.getElementById("overrideExit").addEventListener("click", closeDialogs);
     document.getElementById("validateOK").addEventListener("click", closeDialogs);
     document.getElementById("hintOK").addEventListener("click", closeDialogs);
     document.getElementById("errorOK").addEventListener("click", closeDialogs);
-})
+    await initialization();
+});
 
-function initialization() {
-    if (teamCode === null && locationCode === null) {
+async function initialization() {
+    if (params.team === null && params.location === null) {
+        const hintFile = await (await fetch("assets/game/textHints.csv")).text();
+        const eventName = hintFile.split("\n")[0].split(";")[0];
         document.getElementById("welcome").style.display = "flex";
         document.getElementById("button").innerHTML = "Begin";
         document.getElementById("button").addEventListener("click", onboarding);
@@ -133,29 +77,16 @@ function initialization() {
         document.title = "Welcome | Scavenger Hunt";
         return;
     }
-    if (teamCookie === "") {
+
+    const team = getCookie("Team");
+    if (team === "") {
         alert(error2);
         document.location.href = "./game.html";
         return;
     }
 
-    let teamMatch = false;
-    for (const team of teams)
-        if (teamCode === team)
-            teamMatch = true;
-
-    let locationMatch = false;
-    for (const location of locations)
-        if (locationCode === location)
-            locationMatch = true;
-
-    if (!teamMatch || !locationMatch) {
-        document.body.removeChild(document.getElementById("button"));
-        alert(error3);
-        return;
-    }
-
-    if (teamMatch && locationCode === locations[locations.length - 1]) {
+    const finalLocation = localStorage.getItem("finalLocation");
+    if (params.team === team && params.location === finalLocation) {
         document.getElementById("finish").style.display = "flex";
         document.getElementById("button").innerHTML = "Validate Result";
         document.getElementById("button").addEventListener("click", validate);
@@ -185,93 +116,84 @@ function renderHint(text, image, challenge) {
     document.getElementById("hint").showModal();
 }
 
-function onboarding() {
+async function onboarding() {
     let inputTeam = document.getElementById("team").value;
     if (inputTeam === "")
         return;
 
-    let teamMatch = false;
-    for (const team of teams)
-        if (team === inputTeam)
-            teamMatch = true;
-    if (!teamMatch) {
+    const textHints = parseHints(await (await fetch("assets/game/textHints.csv")).text(), inputTeam);
+    if (textHints.length === 0) {
         document.getElementById("errorText").innerHTML = "Team Name Invalid";
         document.getElementById("error").showModal();
         return;
     }
+    localStorage.setItem("textHints", JSON.stringify(textHints));
 
-    setCookie("Team", inputTeam, 1);
-    teamCookie = getCookie("Team");
-    let teamIndex = -1;
-    for (let i = 0; i < teams.length; i++)
-        if (teamCookie === teams[i])
-            teamIndex = i;
-    if (teamIndex === -1) {
-        document.getElementById("errorText").innerHTML = error2;
+    const imageHints = parseHints(await (await fetch("assets/game/imageHints.csv")).text(), inputTeam);
+    if (imageHints.length === 0) {
+        document.getElementById("errorText").innerHTML = "Team Name Invalid";
         document.getElementById("error").showModal();
         return;
     }
-    let text = textHints[teamIndex][0];
-    let image = imageHints[teamIndex][0];
-    let challenge = textChallenges[0];
+    localStorage.setItem("imageHints", JSON.stringify(imageHints));
+
+    const textChallenges = parseHints(await (await fetch("assets/game/textChallenges.csv")).text(), inputTeam);
+    if (textChallenges.length === 0) {
+        document.getElementById("errorText").innerHTML = "Team Name Invalid";
+        document.getElementById("error").showModal();
+        return;
+    }
+    localStorage.setItem("textChallenges", JSON.stringify(textChallenges));
+
+    localStorage.setItem("createdTimestamp", String(Date.now()));
+    localStorage.setItem("finalLocation", textHints[0][textHints[0].length - 1]);
+
+    setCookie("Team", textHints[1][0], 1);
+    let text = textHints[1][1];
+    let image = imageHints[1][1];
+    let challenge = textChallenges[1][1];
     renderHint(text, image, challenge);
 }
 
 function hint() {
-    teamCookie = getCookie("Team");
-    let teamMatch = false;
-    for (const team of teams)
-        if (teamCode === team)
-            teamMatch = true;
-    if (!teamMatch) {
-        document.getElementById("errorText").innerHTML = error1;
-        document.getElementById("error").showModal();
-        return;
-    }
-
-    if (teamCookie !== teamCode) {
+    if (getCookie("Team") !== params.team) {
         document.getElementById("errorText").innerHTML = "This clue is not meant for your team.<br>Keep looking.";
         document.getElementById("error").showModal();
         return;
     }
 
-    let invalidLocation = true;
-    let invalidTeam = true;
-    for (let i = 0; i < locations.length; i++) {
-        if (locationCode === locations[i]) {
-            invalidLocation = false;
-            let missingLocation = false;
-            if (i !== 0)
-                for (let j = 0; j < i; j++)
-                    if (getCookie(locations[j]) !== "Granted")
-                        missingLocation = true;
+    const textHints = JSON.parse(localStorage.getItem("textHints"));
+    const imageHints = JSON.parse(localStorage.getItem("imageHints"));
+    const textChallenges = JSON.parse(localStorage.getItem("textChallenges"));
 
-            if (missingLocation) {
-                document.getElementById("errorText").innerHTML = "You're not supposed to be here yet.<br>Keep looking.";
-                document.getElementById("error").showModal();
-                return;
-            }
-            setCookie(locations[i], "Granted", 1);
-            for (let j = 0; j < teams.length; j++) {
-                if (teamCode === teams[j]) {
-                    invalidTeam = false;
-                    let text = textHints[j][i + 1];
-                    let image = imageHints[j][i + 1];
-                    let challenge = textChallenges[i + 1];
-                    renderHint(text, image, challenge);
-                    return;
-                }
-            }
-        }
-    }
-    if (invalidLocation || invalidTeam) {
+    const locations = textHints[0];
+    let invalidLocation = true;
+    for (let i = 1; i < locations.length; i++)
+        if (locations[i] === params.location)
+            invalidLocation = false;
+    if (invalidLocation) {
         document.getElementById("errorText").innerHTML = error1;
         document.getElementById("error").showModal();
     }
+    const currentLocation = locations.indexOf(params.location);
+    let missingLocation = false;
+    for (let i = 1; i < currentLocation; i++)
+        if (getCookie(locations[i]) !== "Granted")
+            missingLocation = true;
+    if (missingLocation) {
+        document.getElementById("errorText").innerHTML = "You're not supposed to be here yet.<br>Keep looking.";
+        document.getElementById("error").showModal();
+        return;
+    }
+    setCookie(locations[currentLocation], "Granted", 1);
+    const text = textHints[1][currentLocation + 1];
+    const image = imageHints[1][currentLocation + 1];
+    const challenge = textChallenges[1][currentLocation + 1];
+    renderHint(text, image, challenge);
 }
 
 function validate() {
-    if (teamCode !== teamCookie) {
+    if (getCookie("Team") !== params.team) {
         document.getElementById("errorText").innerHTML = "This is not your team's finishing point.<br>Keep looking.";
         document.getElementById("error").showModal();
         return;
@@ -282,14 +204,18 @@ function validate() {
     let m = String(d.getMinutes()).padStart(2, "0");
     let s = String(d.getSeconds()).padStart(2, "0");
     document.getElementById("completionTime").innerHTML = h + ":" + m + ":" + s;
-    let completionCounter = locations.length;
+
+    const textHints = JSON.parse(localStorage.getItem("textHints"));
+    const locations = textHints[0];
+
+    let completionCounter = locations.length - 1;
     setCookie(locations[locations.length - 1], "Granted", 1);
 
     document.getElementById("validationParent").innerHTML = "";
-    for (let i = 0; i < locations.length; i++) {
+    for (let i = 1; i < locations.length; i++) {
         const label = document.createElement("label");
         label.style.marginBottom = "5px";
-        label.innerHTML = "Location " + (i + 1) + ":";
+        label.innerHTML = "Location " + i + ":";
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -316,15 +242,18 @@ function validate() {
 }
 
 function renderOverride() {
+    const textHints = JSON.parse(localStorage.getItem("textHints"));
+    const locations = textHints[0];
+
     document.getElementById("overrideParent").innerHTML = "";
-    for (let i = 0; i < locations.length; i++) {
+    for (let i = 1; i < locations.length; i++) {
         const label = document.createElement("label");
         label.style.marginBottom = "5px";
 
         const input = document.createElement("input");
-        input.id = "overrideLocation" + (i + 1);
+        input.id = "overrideLocation" + i;
 
-        label.innerHTML = "Location " + (i + 1) + ": ";
+        label.innerHTML = "Location " + i + ": ";
         label.appendChild(input);
         document.getElementById("overrideParent").appendChild(label);
     }
@@ -332,10 +261,12 @@ function renderOverride() {
 }
 
 function override() {
+    const textHints = JSON.parse(localStorage.getItem("textHints"));
+    const locations = textHints[0];
     let overrideTeam = document.getElementById("overrideTeam").value;
     if (overrideTeam !== "")
         setCookie("Team", overrideTeam, 10);
-    for (let i = 0; i < locations.length; i++) {
+    for (let i = 1; i < locations.length; i++) {
         if (document.getElementById("overrideLocation" + i).value !== "")
             setCookie(document.getElementById("overrideLocation" + i), "Granted", 1);
     }

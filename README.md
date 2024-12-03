@@ -24,7 +24,6 @@ feature for on the field troubleshooting.
    - URL Parameters: The script parses URL parameters to determine the team and current location, enabling QR code scanning for location-based clues.
 
 3. CSV Data Files
-   - gameParameters.csv: Stores the list of teams and locations in the game and the game name.
    - textHints.csv: Contains textual hints associated with each location and team.
    - imageHints.csv: Holds image-based hints corresponding to locations and teams.
    - textChallenges.csv: Contains textual challenges corresponding to locations and teams.
@@ -55,28 +54,22 @@ feature for on the field troubleshooting.
 
 ## Example CSV Data
 
-### Game Parameters
-
-```
-Event Name
-Team 1;Team 2;Team 3;...
-Location 1;Location 2;Location 3;...
-```
-
 ### Hints
 
 This section applies to both text and image hints.
 ```
-Location 1 Hint;Location 2 Hint;... (Team 1)
-Location 1 Hint;Location 2 Hint;... (Team 2)
+Game Name; Location 1 Name; Location 2 Name
+Team 1 Name; Location 1 Hint;Location 2 Hint;...
+Team 2 Name; Location 1 Hint;Location 2 Hint;...
 ...
 ```
 
 ### Challenges
 
 ```
-Location 1 Challenge;Location 2 Challenge;... (Team 1)
-Location 1 Challenge;Location 2 Challenge;... (Team 2)
+Game Name; Location 1 Name; Location 2 Name
+Team 1 Name; Location 1 Challenge;Location 2 Challenge;...
+Team 2 Name; Location 1 Challenge;Location 2 Challenge;...
 ...
 ```
 
