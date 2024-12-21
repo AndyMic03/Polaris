@@ -59,6 +59,7 @@ docReady(async () => {
         localStorage.clear();
     }
     document.getElementById("overrideOK").addEventListener("click", override);
+    document.getElementById("qrExit").addEventListener("click", closeDialogs);
     document.getElementById("overrideExit").addEventListener("click", closeDialogs);
     document.getElementById("validateOK").addEventListener("click", closeDialogs);
     document.getElementById("hintOK").addEventListener("click", closeDialogs);
@@ -278,4 +279,5 @@ function closeDialogs() {
     document.getElementById("hint").close();
     document.getElementById("validation").close();
     document.getElementById("override").close();
+    document.getElementById("qr").close();
 }
