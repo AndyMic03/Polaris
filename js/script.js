@@ -1,3 +1,5 @@
+import {generateQR} from "./qrGen";
+
 const params = new Proxy(new URLSearchParams(window.location.search), {
     get: (searchParams, prop) => searchParams.get(prop),
 });
@@ -54,6 +56,8 @@ function setCookie(cName, cValue, exDays) {
     document.cookie = cName + "=" + cValue + ";" + expires + ";path=/";
 }
 
+let csvFile;
+
 docReady(async () => {
     if (Date.now() - localStorage.getItem('createdTimestamp') > 86400000) {
         localStorage.clear();
@@ -64,6 +68,19 @@ docReady(async () => {
     document.getElementById("validateOK").addEventListener("click", closeDialogs);
     document.getElementById("hintOK").addEventListener("click", closeDialogs);
     document.getElementById("errorOK").addEventListener("click", closeDialogs);
+    document.getElementById("csv_file").addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.addEventListener("load", (e) => {
+            csvFile = e.target.result;
+        });
+        if (file !== null) {
+            reader.readAsText(file);
+        }
+    });
+    document.getElementById("qrGenerate").addEventListener("click", async function () {
+        await generateQR(csvFile)
+    });
     await initialization();
 });
 
@@ -82,7 +99,7 @@ async function initialization() {
     const team = getCookie("Team");
     if (team === "") {
         alert(error2);
-        document.location.href = "./game.html";
+        document.location.href = "../index.html";
         return;
     }
 

@@ -90,22 +90,21 @@
 <dialog id="qr">
     <div class="v-container">
         <h2>Generate QR Codes PDF</h2>
-        <form action="/generate_pdf" enctype="multipart/form-data" method="POST">
-            <div class="v-container">
-                <input accept="text/csv" id="csv_file" name="csv_file" required style="display:none" type="file">
-                <button id="csvUpload" onclick="document.getElementById('csv_file').click()"
-                        style="margin-bottom: 10px">Upload CSV File
-                </button>
-                <label for="base_url" style="margin-bottom: 5px">Base URL</label>
-                <input id="base_url" name="base_url" style="margin-bottom: 10px" type="text">
-                <div class="h-container">
-                    <button id="qrExit" style="margin-right: 10px">Exit</button>
-                    <button id="qrGenerate">Generate</button>
-                </div>
+        <div class="v-container">
+            <input accept="text/csv" id="csv_file" name="csv_file" required style="display:none" type="file">
+            <button id="csvUpload" onclick="document.getElementById('csv_file').click()"
+                    style="margin-bottom: 10px">Upload CSV File
+            </button>
+            <label for="base_url" style="margin-bottom: 5px">Base URL</label>
+            <input id="base_url" name="base_url" style="margin-bottom: 10px" type="text">
+            <div class="h-container">
+                <button id="qrExit" style="margin-right: 10px">Exit</button>
+                <button id="qrGenerate">Generate</button>
             </div>
-        </form>
+        </div>
     </div>
 </dialog>
-<script src="js/script.js"></script>
+<script src="js/qrGen.js" type="module"></script>
+<script src="js/script.js" type="module"></script>
 </body>
 </html>
