@@ -31,6 +31,7 @@
 </div>
 <button class="page-bottom-button" id="button"></button>
 <span class="override-link" onclick="renderOverride()">Game Override</span>
+<span class="override-link" onclick="document.getElementById('qr').showModal()">Generate QR Codes</span>
 <footer id="footer">
     Powered by Polaris
     <img alt="ESN Logo" class="polaris-logo" src="/assets/images/polarisLogo.svg">
@@ -86,6 +87,29 @@
         </div>
     </div>
 </dialog>
-<script src="js/script.js"></script>
+<dialog id="qr">
+    <div class="v-container">
+        <h2>Generate QR Codes PDF</h2>
+        <div class="v-container">
+            <input accept="text/csv" id="csvFile" required style="display:none" type="file">
+            <button id="csvUpload" onclick="document.getElementById('csvFile').click()"
+                    style="margin-bottom: 10px">Upload CSV File
+            </button>
+            <label for="base_url" style="margin-bottom: 5px">Base URL</label>
+            <input id="base_url" name="base_url" style="margin-bottom: 10px" type="text">
+            <div class="progress-container" id="progressContainer" style="margin-bottom: 10px">
+                <div class="progress-bar" id="progressBar" style="width: 0px"></div>
+            </div>
+            <div class="h-container">
+                <button id="qrExit" style="margin-right: 10px">Exit</button>
+                <button id="qrGenerate">Generate</button>
+            </div>
+            <p class="open-source">This module uses <a href="https://www.npmjs.com/package/qr-code-styling">qr-code-styling</a>
+                and <a href="https://www.npmjs.com/package/jspdf">jsDoc</a>, both under the MIT License.</p>
+        </div>
+    </div>
+</dialog>
+<script src="js/qrGen.js" type="module"></script>
+<script src="js/script.js" type="module"></script>
 </body>
 </html>

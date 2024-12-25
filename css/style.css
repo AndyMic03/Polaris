@@ -151,3 +151,29 @@ footer {
 .polaris-logo {
     height: 128px;
 }
+
+.open-source {
+    font-size: 12px;
+    color: black;
+}
+
+.open-source a {
+    color: grey !important;
+    text-decoration: none;
+}
+
+.progress-container, .progress-bar {
+    height: 20px;
+}
+
+.progress-container {
+    width: 75%;
+    background-color: lightgrey;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+.progress-bar {
+    background-color: var(--ESN-Cyan);
+    border-radius: 5px 0 0 5px;
+}
