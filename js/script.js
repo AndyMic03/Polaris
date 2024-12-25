@@ -68,7 +68,7 @@ docReady(async () => {
     document.getElementById("validateOK").addEventListener("click", closeDialogs);
     document.getElementById("hintOK").addEventListener("click", closeDialogs);
     document.getElementById("errorOK").addEventListener("click", closeDialogs);
-    document.getElementById("csv_file").addEventListener("change", (event) => {
+    document.getElementById("csvFile").addEventListener("change", (event) => {
         const file = event.target.files[0];
         const reader = new FileReader();
         reader.addEventListener("load", (e) => {

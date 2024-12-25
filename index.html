@@ -91,16 +91,21 @@
     <div class="v-container">
         <h2>Generate QR Codes PDF</h2>
         <div class="v-container">
-            <input accept="text/csv" id="csv_file" name="csv_file" required style="display:none" type="file">
-            <button id="csvUpload" onclick="document.getElementById('csv_file').click()"
+            <input accept="text/csv" id="csvFile" required style="display:none" type="file">
+            <button id="csvUpload" onclick="document.getElementById('csvFile').click()"
                     style="margin-bottom: 10px">Upload CSV File
             </button>
             <label for="base_url" style="margin-bottom: 5px">Base URL</label>
             <input id="base_url" name="base_url" style="margin-bottom: 10px" type="text">
+            <div class="progress-container" id="progressContainer" style="margin-bottom: 10px">
+                <div class="progress-bar" id="progressBar" style="width: 0px"></div>
+            </div>
             <div class="h-container">
                 <button id="qrExit" style="margin-right: 10px">Exit</button>
                 <button id="qrGenerate">Generate</button>
             </div>
+            <p class="open-source">This module uses <a href="https://www.npmjs.com/package/qr-code-styling">qr-code-styling</a>
+                and <a href="https://www.npmjs.com/package/jspdf">jsDoc</a>, both under the MIT License.</p>
         </div>
     </div>
 </dialog>

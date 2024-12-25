@@ -45,7 +45,7 @@ async function makeQR(link, text) {
 
     context.drawImage(qrCodeImage, 0, 0);
     context.textAlign = "center";
-    context.font = "18px Lato";
+    context.font = "24px Lato";
     const slackHeight = canvas.height - Math.min(canvas.width, canvas.height);
     const slackWidth = canvas.width - Math.min(canvas.width, canvas.height);
     context.fillText(text, (canvas.width - slackWidth) / 2, canvas.height - slackHeight / 2, canvas.width);
@@ -78,17 +78,27 @@ async function makePDF(locations, baseURL) {
         unit: "px",
         hotfixes: ["px_scaling"]
     });
+
+    let operations = 0;
+    for (let i = 1; i < locations.length; i++)
+        for (let j = 0; j < locations[i].length; j++)
+            operations++;
+    const tickWidth = (document.getElementById("progressContainer").offsetWidth - 2) / operations;
+
     for (let i = 1; i < locations.length; i++) {
         for (let j = 1; j < locations[i].length; j++) {
             if (j === 1) {
                 const img = await makeQR(baseURL, locations[i][0]);
                 addImage(doc, img);
+                document.getElementById("progressBar").style.width = Number(document.getElementById("progressBar").style.width.slice(0, -2)) + tickWidth + "px";
             }
             const url = baseURL + "/?team=" + locations[i][0] + "&location=" + locations[0][j]
             const img = await makeQR(url, locations[i][j]);
             addImage(doc, img);
+            document.getElementById("progressBar").style.width = Number(document.getElementById("progressBar").style.width.slice(0, -2)) + tickWidth + "px";
         }
     }
+    document.getElementById("progressBar").style.borderRadius = "5px";
     doc.save("qrCodes.pdf");
 }
 
