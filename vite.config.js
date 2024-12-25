@@ -9,6 +9,7 @@ export default defineConfig({
                 chunkFileNames: `assets/[name].js`,
                 assetFileNames: `assets/[name].[ext]`
             }
-        }
+        },
+        assetsInlineLimit: 0
     }
 });

@@ -84,6 +84,22 @@ docReady(async () => {
     await initialization();
 });
 
+docReady(async () => {
+    const logoRequest = await fetch("../assets/game/logo.svg");
+    if (!logoRequest.ok)
+        document.getElementsByClassName("page-top-image")[0].src = "../assets/polarisLogo.svg";
+    const faviconRequest = await fetch("../assets/game/favicon.svg");
+    if (!faviconRequest.ok) {
+        const link = document.querySelector("link[rel~='icon']");
+        link.href = "../assets/polarisLogo.svg";
+    }
+    const hintsRequest = await fetch("../assets/game/textHints.csv");
+    if (!hintsRequest.ok) {
+        document.getElementById("team").placeholder = "Game not Ready";
+        document.getElementById("team").disabled = true;
+    }
+});
+
 async function initialization() {
     if (params.team === null && params.location === null) {
         const hintFile = await (await fetch("assets/game/textHints.csv")).text();
