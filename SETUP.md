@@ -7,6 +7,9 @@ These instructions will guide you through setting up your own instance of the Po
 Polaris uses CSV files to store game data. You can edit these files directly or use a spreadsheet program like Excel or
 Google Sheets and export to CSV.
 
+Each location has a team and a milestone. Milestones track progression, for example, the hint for Team A at Milestone 1,
+will point the player to the location of Team A's Milestone 2.
+
 > **_NOTE:_** If a field doesn't require a value, use NULL to ensure proper functionality.
 
 > **_IMPORTANT:_** All CSV files must be encoded using semicolon (;) separators. This is crucial for Polaris to
@@ -16,15 +19,16 @@ Google Sheets and export to CSV.
 
 Create a CSV file named `textHints.csv` in the `game` folder.
 
-This file contains textual hints for the locations. Each column represents a location, and each row corresponds to a
-game or a team. The first row must contain the location names. The first cell of the document contains the game name.
+This file contains textual hints for the locations. Each column represents a milestone, and each row corresponds to a
+team.
+The first row must contain the milestone names. The first cell of the document contains the game name.
 
 ### Image Hints
 
 Create a CSV file named `imageHints.csv` in the `game` folder.
 
-This file contains image hints for each location. Similar to `textHints.csv`, columns represent locations, rows
-represent games/teams, and the first row contains location names.
+This file contains image hints for each location. Similar to `textHints.csv`, columns represent milestones, rows
+represent teams, and the first row contains the milestone names.
 
 #### Valid Image Sources:
 
@@ -37,18 +41,18 @@ represent games/teams, and the first row contains location names.
 Create a CSV file named `textChallenges.csv` in the `game` folder.
 
 This file houses the challenges that participants must complete at each location. The first row should contain the
-location names. Each subsequent row represents a different team, containing the challenges specific to that game.
+milestone names. Each subsequent row represents a different team, containing the challenges specific to that game.
 
 It's crucial that these names exactly match the names used in `textHints.csv` and `imageHints.csv`.
 
 ## Table Structure
 
-| Game Name | Location 1 | Location 2 | Location 3 | Location n |
-|-----------|------------|------------|------------|------------|
-| Team 1    | ...        | ...        | ...        | ...        |
-| Team 2    | ...        | ...        | ...        | ...        |
-| Team 3    | ...        | ...        | ...        | ...        |
-| Team n    | ...        | ...        | ...        | ...        |
+| Game Name | Milestone 1 | Milestone 2 | Milestone 3 | Milestone n |
+|-----------|-------------|-------------|-------------|-------------|
+| Team 1    | ...         | ...         | ...         | ...         |
+| Team 2    | ...         | ...         | ...         | ...         |
+| Team 3    | ...         | ...         | ...         | ...         |
+| Team n    | ...         | ...         | ...         | ...         |
 
 ## Images
 
@@ -108,8 +112,7 @@ A typical Polaris project directory would be structured as follows:
 │       ├── imageHints.csv
 │       ├── textChallenges.csv
 │       ├── favicon.svg
-│       ├── logo.svg
-│       └── locations.csv
+│       └── logo.svg
 └── index.html
 ```
 
