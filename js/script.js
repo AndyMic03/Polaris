@@ -62,7 +62,9 @@ docReady(async () => {
     if (Date.now() - localStorage.getItem('createdTimestamp') > 86400000) {
         localStorage.clear();
     }
+    document.getElementById("gameOverride").addEventListener("click", renderOverride);
     document.getElementById("overrideOK").addEventListener("click", override);
+    document.getElementById("generateQR").addEventListener("click", renderQR);
     document.getElementById("qrExit").addEventListener("click", closeDialogs);
     document.getElementById("overrideExit").addEventListener("click", closeDialogs);
     document.getElementById("validateOK").addEventListener("click", closeDialogs);
@@ -305,6 +307,11 @@ function override() {
             setCookie(document.getElementById("overrideLocation" + i), "Granted", 1);
     }
     closeDialogs();
+}
+
+function renderQR() {
+    document.getElementById("progressBar").style.width = "0px";
+    document.getElementById('qr').showModal();
 }
 
 function closeDialogs() {

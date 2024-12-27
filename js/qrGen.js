@@ -85,6 +85,8 @@ async function makePDF(locations, baseURL) {
             operations++;
     const tickWidth = (document.getElementById("progressContainer").offsetWidth - 2) / operations;
 
+    document.getElementById("progressBar").style.width = "0px";
+
     for (let i = 1; i < locations.length; i++) {
         for (let j = 1; j < locations[i].length; j++) {
             if (j === 1) {

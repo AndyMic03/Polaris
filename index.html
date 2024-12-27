@@ -30,8 +30,8 @@
     <p class="description">You have finished the game.<br>Please submit your score after clicking validate.</p>
 </div>
 <button class="page-bottom-button" id="button"></button>
-<span class="override-link" onclick="renderOverride()">Game Override</span>
-<span class="override-link" onclick="document.getElementById('qr').showModal()">Generate QR Codes</span>
+<span class="override-link" id="gameOverride">Game Override</span>
+<span class="override-link" id="generateQR">Generate QR Codes</span>
 <footer id="footer">
     Powered by Polaris
     <img alt="ESN Logo" class="polaris-logo" src="/assets/images/polarisLogo.svg">
@@ -98,7 +98,7 @@
             <label for="base_url" style="margin-bottom: 5px">Base URL</label>
             <input id="base_url" name="base_url" style="margin-bottom: 10px" type="text">
             <div class="progress-container" id="progressContainer" style="margin-bottom: 10px">
-                <div class="progress-bar" id="progressBar" style="width: 0px"></div>
+                <div class="progress-bar" id="progressBar"></div>
             </div>
             <div class="h-container">
                 <button id="qrExit" style="margin-right: 10px">Exit</button>
