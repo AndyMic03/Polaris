@@ -87,11 +87,20 @@ docReady(async () => {
 });
 
 docReady(async () => {
-    const logoRequest = await fetch("../assets/game/logo.svg");
-    if (!logoRequest.ok)
+    try {
+        const logoRequest = await fetch("../assets/game/logo.svg");
+        if (!logoRequest.ok || !logoRequest.headers.get("Content-Type").includes("image"))
+            document.getElementsByClassName("page-top-image")[0].src = "../assets/polarisLogo.svg";
+    } catch (_) {
         document.getElementsByClassName("page-top-image")[0].src = "../assets/polarisLogo.svg";
-    const faviconRequest = await fetch("../assets/game/favicon.svg");
-    if (!faviconRequest.ok) {
+    }
+    try {
+        const faviconRequest = await fetch("../assets/game/favicon.svg");
+        if (!faviconRequest.ok || !faviconRequest.headers.get("Content-Type").includes("image")) {
+            const link = document.querySelector("link[rel~='icon']");
+            link.href = "../assets/polarisLogo.svg";
+        }
+    } catch (_) {
         const link = document.querySelector("link[rel~='icon']");
         link.href = "../assets/polarisLogo.svg";
     }

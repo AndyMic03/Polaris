@@ -1,8 +1,8 @@
 import QRCodeStyling from "qr-code-styling";
 import jsPDF from "jspdf";
 
-const pageWidth = 2970;
-const pageHeight = 2100;
+const pageWidth = 1188;
+const pageHeight = 840;
 const codesHorizontally = 3;
 const codesVertically = 2;
 
@@ -18,14 +18,14 @@ async function makeQR(link, text) {
         type: "svg",
         data: link,
         image: "./assets/polarisLogo.svg",
-        margin: 10,
+        margin: Math.round(Math.min(canvas.width, canvas.height) * 0.01),
         qrOptions: {
             errorCorrectionLevel: "H"
         },
         imageOptions: {
             saveAsBlob: true,
             crossOrigin: "anonymous",
-            margin: 20
+            margin: Math.round(Math.min(canvas.width, canvas.height) * 0.02)
         },
     });
 
@@ -45,7 +45,7 @@ async function makeQR(link, text) {
 
     context.drawImage(qrCodeImage, 0, 0);
     context.textAlign = "center";
-    context.font = "24px Lato";
+    context.font = Math.min(canvas.width, canvas.height) * 0.025 + "px Lato";
     const slackHeight = canvas.height - Math.min(canvas.width, canvas.height);
     const slackWidth = canvas.width - Math.min(canvas.width, canvas.height);
     context.fillText(text, (canvas.width - slackWidth) / 2, canvas.height - slackHeight / 2, canvas.width);
@@ -62,7 +62,7 @@ function addImage(doc, image) {
         hCounter = 0
     }
     if (vCounter === codesVertically) {
-        doc.addPage([2100, 2970], "l");
+        doc.addPage([pageHeight, pageWidth], "l");
         vCounter = 0
     }
     const width = pageWidth / codesHorizontally;
@@ -73,7 +73,7 @@ function addImage(doc, image) {
 
 async function makePDF(locations, baseURL) {
     const doc = new jsPDF({
-        format: [2100, 2970],
+        format: [pageHeight, pageWidth],
         orientation: "landscape",
         unit: "px",
         hotfixes: ["px_scaling"]
@@ -94,8 +94,8 @@ async function makePDF(locations, baseURL) {
                 addImage(doc, img);
                 document.getElementById("progressBar").style.width = Number(document.getElementById("progressBar").style.width.slice(0, -2)) + tickWidth + "px";
             }
-            const url = baseURL + "/?team=" + locations[i][0] + "&location=" + locations[0][j]
-            const img = await makeQR(url, locations[i][j]);
+            const url = baseURL + "/?team=" + locations[i][0] + "&location=" + locations[0][j];
+            const img = await makeQR(url.replaceAll(" ", "%20"), locations[i][j]);
             addImage(doc, img);
             document.getElementById("progressBar").style.width = Number(document.getElementById("progressBar").style.width.slice(0, -2)) + tickWidth + "px";
         }
