@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "qr-code-styling": "^1.8.4",
-    "jspdf": "^2.5.2"
-  },
-  "devDependencies": {
-    "vite": "^6.0.5"
-  }
-}
