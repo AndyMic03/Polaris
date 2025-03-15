@@ -1,0 +1,153 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Lato, sans-serif;
+}
+
+h2 {
+    font-family: "Kelson Bold", sans-serif;
+    font-size: 36px;
+}
+
+label {
+    font-size: 24px;
+}
+
+button {
+    background-color: #7ac143;
+    border-radius: 10px;
+    border-style: none;
+    font-size: 28px;
+    color: white;
+    padding: 5px;
+}
+
+button:hover {
+    background-color: #ec008c;
+}
+
+dialog {
+    border-radius: 10px;
+    border-width: 0;
+}
+
+dialog::backdrop {
+    background-image: linear-gradient(
+            45deg,
+            var(--ESN-Cyan),
+            var(--ESN-Magenta),
+            var(--ESN-Green),
+            var(--ESN-Orange)
+    );
+    opacity: 0.25;
+}
+
+footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    font-size: 18px;
+    padding: 10px;
+    border: 1px solid grey;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.page-container, .v-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.page-container {
+    display: none;
+    margin-bottom: 20px;
+}
+
+.v-container {
+    display: flex;
+}
+
+.h-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.page-top-image {
+    width: 500px;
+    margin-top: 5px;
+    font-size: 500px !important;
+}
+
+.title {
+    font-family: "Kelson Bold", sans-serif;
+    font-size: 48px;
+}
+
+.description {
+    font-size: 24px;
+    text-align: center;
+}
+
+.team-input {
+    width: 400px;
+    height: 40px;
+    font-size: 32px;
+}
+
+.page-bottom-button {
+    height: 75px;
+    width: 150px;
+    margin-bottom: 20px;
+}
+
+.override-link {
+    font-weight: 300;
+    font-size: 14px;
+    color: black;
+    text-decoration: underline;
+    text-decoration-color: grey;
+}
+
+.hint-container {
+    display: none;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.dialog-title, .dialog-text {
+    text-align: center;
+    font-size: 24px;
+}
+
+.dialog-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.dialog-image {
+    display: none;
+    margin-bottom: 5px;
+}
+
+.entry-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.override::backdrop {
+    background-color: red !important;
+    background-image: none;
+    opacity: 0.80 !important;
+}
+
+.polaris-logo {
+    height: 128px;
+}
