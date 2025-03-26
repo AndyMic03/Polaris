@@ -1,5 +1,5 @@
 import QRCodeStyling from "qr-code-styling";
-import jsPDF from "jspdf";
+import {jsPDF} from "jspdf";
 
 const pageWidth = 1188;
 const pageHeight = 840;
@@ -76,31 +76,30 @@ async function makePDF(locations, baseURL) {
         format: [pageHeight, pageWidth],
         orientation: "landscape",
         unit: "px",
-        hotfixes: ["px_scaling"]
     });
 
-    let operations = 0;
-    for (let i = 1; i < locations.length; i++)
-        for (let j = 0; j < locations[i].length; j++)
-            operations++;
-    const tickWidth = (document.getElementById("progressContainer").offsetWidth - 2) / operations;
-
+    document.getElementById("progressContainer").style.display = "block";
     document.getElementById("progressBar").style.width = "0px";
 
+    let totalCodes = 0;
+    for (let i = 1; i < locations.length; i++)
+        for (let j = 1; j < locations[i].length; j++)
+            totalCodes++;
+    let processedCodes = 0;
     for (let i = 1; i < locations.length; i++) {
         for (let j = 1; j < locations[i].length; j++) {
             if (j === 1) {
                 const img = await makeQR(baseURL, locations[i][0]);
                 addImage(doc, img);
-                document.getElementById("progressBar").style.width = Number(document.getElementById("progressBar").style.width.slice(0, -2)) + tickWidth + "px";
             }
-            const url = baseURL + "/?team=" + locations[i][0] + "&location=" + locations[0][j];
+            const url = baseURL + "/?team=" + locations[i][0] + "&milestone=" + locations[0][j];
             const img = await makeQR(url.replaceAll(" ", "%20"), locations[i][j]);
             addImage(doc, img);
-            document.getElementById("progressBar").style.width = Number(document.getElementById("progressBar").style.width.slice(0, -2)) + tickWidth + "px";
+            processedCodes++;
+            document.getElementById("progressBar").style.width = (processedCodes / totalCodes) * 100 + "%";
         }
     }
-    document.getElementById("progressBar").style.borderRadius = "5px";
+    document.getElementById("progressBar").style.borderRadius = "10px";
     doc.save("qrCodes.pdf");
 }
 

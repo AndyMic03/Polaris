@@ -6,7 +6,8 @@ body {
 }
 
 h2 {
-    font-family: "Kelson Bold", sans-serif;
+    font-family: Kelson, sans-serif;
+    font-weight: bold;
     font-size: 36px;
 }
 
@@ -14,8 +15,15 @@ label {
     font-size: 24px;
 }
 
+input[type="text"] {
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    box-shadow: 0 5px 5px #eee;
+}
+
 button {
-    background-color: #7ac143;
+    background-color: var(--esn-green);
     border-radius: 10px;
     border-style: none;
     font-size: 28px;
@@ -24,21 +32,22 @@ button {
 }
 
 button:hover {
-    background-color: #ec008c;
+    background-color: var(--esn-cyan);
 }
 
 dialog {
-    border-radius: 10px;
+    padding: 20px 10px;
+    border-radius: 20px;
     border-width: 0;
 }
 
 dialog::backdrop {
     background-image: linear-gradient(
             45deg,
-            var(--ESN-Cyan),
-            var(--ESN-Magenta),
-            var(--ESN-Green),
-            var(--ESN-Orange)
+            var(--esn-cyan),
+            var(--esn-magenta),
+            var(--esn-green),
+            var(--esn-orange)
     );
     opacity: 0.25;
 }
@@ -63,7 +72,7 @@ footer {
 
 .page-container {
     display: none;
-    margin-bottom: 20px;
+    margin: 30px 0;
 }
 
 .v-container {
@@ -78,60 +87,113 @@ footer {
 }
 
 .page-top-image {
-    width: 500px;
+    width: 400px;
     margin-top: 5px;
-    font-size: 500px !important;
+    font-size: 400px !important;
+    color: var(--esn-green) !important;
 }
 
 .title {
-    font-family: "Kelson Bold", sans-serif;
+    font-family: Kelson, sans-serif;
+    font-weight: bold;
     font-size: 48px;
 }
 
-.description {
+.description, .game-name {
     font-size: 24px;
     text-align: center;
 }
 
-.team-input {
-    width: 400px;
-    height: 40px;
-    font-size: 32px;
+.description {
+    margin-bottom: 10px;
 }
 
-.page-bottom-button {
-    height: 75px;
-    width: 150px;
+.game-name {
     margin-bottom: 20px;
+    color: var(--esn-green);
+    font-weight: bold;
 }
 
-.override-link {
+.team-input {
+    width: 380px;
+    height: 30px;
+    font-size: 20px;
+}
+
+.team-input::placeholder {
+    font-size: 16px;
+    color: lightgray;
+    padding: 5px;
+}
+
+.main-button {
+    height: 50px;
+    width: 400px;
+    margin-bottom: 20px;
+    font-family: Lato, sans-serif;
+}
+
+.footer-link {
     font-weight: 300;
     font-size: 14px;
-    color: black;
+    color: gray;
     text-decoration: underline;
-    text-decoration-color: grey;
+    text-decoration-color: lightgray;
+    margin-bottom: 5px;
 }
 
 .hint-container {
     display: none;
     flex-direction: column;
+    justify-content: center;
+}
+
+.validate-checkbox {
+    pointer-events: none;
+    accent-color: var(--esn-green);
+    margin-left: 10px;
+}
+
+.validate-time {
+    font-weight: bold;
+    color: var(--esn-green);
+}
+
+.hint-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bolder;
     margin-bottom: 10px;
 }
 
-.dialog-title, .dialog-text {
+.divider {
+    width: 100%;
+    margin: 30px 0;
+}
+
+.dialog-text {
     text-align: center;
     font-size: 24px;
-}
-
-.dialog-title {
-    font-weight: bold;
-    margin-bottom: 10px;
 }
 
 .dialog-image {
     display: none;
     margin-bottom: 5px;
+}
+
+.dialog-button-container {
+    width: 100%;
+}
+
+.dialog-button {
+    width: 50%;
+    margin-top: 20px;
+    padding: 10px 20px;
+}
+
+.dialog-input {
+    width: calc(100% - 20px);
+    margin-bottom: 15px;
 }
 
 .entry-container {
@@ -142,10 +204,18 @@ footer {
     margin-bottom: 10px;
 }
 
+.override {
+    padding: 20px 40px;
+}
+
+.override div div {
+    width: 100%;
+}
+
 .override::backdrop {
-    background-color: red !important;
+    background-color: black !important;
     background-image: none;
-    opacity: 0.80 !important;
+    opacity: 0.25 !important;
 }
 
 .polaris-logo {
@@ -162,18 +232,85 @@ footer {
     text-decoration: none;
 }
 
+.qr-button {
+    width: 100%;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+}
+
 .progress-container, .progress-bar {
-    height: 20px;
+    height: 30px;
 }
 
 .progress-container {
-    width: 75%;
-    background-color: lightgrey;
-    border: 1px solid black;
-    border-radius: 5px;
+    display: none;
+    width: 100%;
+    background-color: var(--esn-darkblue);
+    border-radius: 10px;
 }
 
 .progress-bar {
-    background-color: var(--ESN-Cyan);
-    border-radius: 5px 0 0 5px;
+    background-color: var(--esn-cyan);
+    border-radius: 10px 0 0 10px;
+}
+
+.checklist-container {
+    position: fixed;
+    bottom: 0;
+}
+
+.checklist-drawer {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    top: 1px;
+    left: calc(50% - 75px);
+    width: 150px;
+    background-color: white;
+    border: 1px solid #e6e6e6;
+    border-bottom: 1px solid white;
+    border-radius: 10px 10px 0 0;
+    padding: 5px 0;
+}
+
+.checklist-body {
+    height: 0;
+    width: 460px;
+    overflow-y: auto;
+    border-radius: 10px 10px 0 0;
+    background-color: white;
+    box-shadow: 0 0 20px 1px #e6e6e6;
+    transition: height 1s ease-in-out;
+}
+
+.checklist-body::-webkit-scrollbar {
+    display: none;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px #eee;
+    padding: 10px;
+    margin: 0 20px 10px;
+    cursor: pointer;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.checklist-item:first-of-type {
+    margin-top: 20px;
+}
+
+.checklist-item:last-of-type {
+    margin-bottom: 20px;
+}
+
+.checklist-item input {
+    margin-right: 10px;
+    pointer-events: none;
+    accent-color: var(--esn-green);
+    color: white;
 }

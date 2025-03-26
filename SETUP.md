@@ -5,7 +5,7 @@ These instructions will guide you through setting up your own instance of the Po
 ## Game Resources
 
 Polaris uses CSV files to store game data. You can edit these files directly or use a spreadsheet program like Excel or
-Google Sheets and export to CSV.
+Google Sheets and export them as CSV files.
 
 Each location has a team and a milestone. Milestones track progression, for example, the hint for Team A at Milestone 1,
 will point the player to the location of Team A's Milestone 2.
@@ -44,6 +44,16 @@ This file houses the challenges that participants must complete at each location
 milestone names. Each subsequent row represents a different team, containing the challenges specific to that game.
 
 It's crucial that these names exactly match the names used in `textHints.csv` and `imageHints.csv`.
+
+### Checklist
+
+Create a CSV file named `checklist.csv` in the `game` folder.
+
+This file contains a list of non-location specific challenges that participants can complete throughout the game. Each
+row in the CSV represents a different challenge.
+
+> **_NOTE:_** All the above files are optional. The game only requires one of the following files to be present:
+`textHints.csv`, `imageHints.csv`, `textChallenges.csv`.
 
 ## Table Structure
 
@@ -111,6 +121,7 @@ A typical Polaris project directory would be structured as follows:
 │       ├── textHints.csv
 │       ├── imageHints.csv
 │       ├── textChallenges.csv
+│       ├── checklist.csv
 │       ├── favicon.svg
 │       └── logo.svg
 └── index.html
@@ -144,7 +155,8 @@ game.
 1. **Access the Generator:** At the bottom of the Polaris page, click the "Generate QR Codes" link.
 2. **Upload Locations:**
     - Prepare a CSV file (see "Game Resources" for format) containing your location names (e.g., "National Museum", "
-      City Hall").
+      City Hall"). If a location is assigned to more than one team, make sure that you put the team name in the location
+      name to avoid player confusion.
     - Upload this CSV file to the QR code generator.
 3. **Enter Base URL:**
     - Provide the base URL where your Polaris game is hosted. This is the URL of your index.html file.
