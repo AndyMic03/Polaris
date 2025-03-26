@@ -439,6 +439,7 @@ function renderOverride() {
 
     for (let i = 1; i < milestones.length; i++) {
         const input = document.createElement("input");
+        input.type = "text";
         input.id = "overrideMilestone" + i;
         input.placeholder = "Milestone " + i;
         input.classList.add("dialog-input");
