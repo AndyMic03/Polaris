@@ -7,6 +7,7 @@ const codesHorizontally = 3;
 const codesVertically = 2;
 
 async function makeQR(link, text) {
+    "use strict";
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
     canvas.width = pageWidth / codesHorizontally;
@@ -57,21 +58,34 @@ let hCounter = 0;
 let vCounter = 0;
 
 function addImage(doc, image) {
+    "use strict";
     if (hCounter === codesHorizontally) {
-        vCounter += 1
-        hCounter = 0
+        vCounter += 1;
+        hCounter = 0;
     }
     if (vCounter === codesVertically) {
         doc.addPage([pageHeight, pageWidth], "l");
-        vCounter = 0
+        vCounter = 0;
     }
     const width = pageWidth / codesHorizontally;
     const height = pageHeight / codesVertically;
     doc.addImage(image, "PNG", hCounter * width, vCounter * height, width, height);
-    hCounter += 1
+    hCounter += 1;
 }
 
-async function makePDF(locations, baseURL) {
+export async function generateQR(csvFile) {
+    "use strict";
+    if (csvFile === undefined) {
+        return;
+    }
+    let locations = [];
+    const rows = csvFile.split("\n");
+    for (const row of rows) {
+        locations.push(row.split(";"));
+    }
+
+    const baseURL = document.getElementById("base_url").value;
+
     const doc = new jsPDF({
         format: [pageHeight, pageWidth],
         orientation: "landscape",
@@ -82,9 +96,11 @@ async function makePDF(locations, baseURL) {
     document.getElementById("progressBar").style.width = "0px";
 
     let totalCodes = 0;
-    for (let i = 1; i < locations.length; i++)
-        for (let j = 1; j < locations[i].length; j++)
+    for (let i = 1; i < locations.length; i++) {
+        for (let j = 1; j < locations[i].length; j++) {
             totalCodes++;
+        }
+    }
     let processedCodes = 0;
     for (let i = 1; i < locations.length; i++) {
         for (let j = 1; j < locations[i].length; j++) {
@@ -101,14 +117,4 @@ async function makePDF(locations, baseURL) {
     }
     document.getElementById("progressBar").style.borderRadius = "10px";
     doc.save("qrCodes.pdf");
-}
-
-export async function generateQR(csvFile) {
-    if (csvFile === undefined)
-        return;
-    let locations = [];
-    const rows = csvFile.split("\n");
-    for (const row of rows)
-        locations.push(row.split(";"));
-    await makePDF(locations, document.getElementById("base_url").value);
 }

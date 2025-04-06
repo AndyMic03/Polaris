@@ -6,24 +6,30 @@ const error1 = "Error 1: The URL Arguments are missing or wrong. Please contact 
 const error2 = "Error 2: The website Cookies are missing or wrong. Please contact the Game Organizer.";
 
 function parseFile(fileCsv, teamName) {
+    "use strict";
     let array = [];
     const lines = fileCsv.split("\n");
     for (let i = 0; i < lines.length; i++) {
         const records = lines[i].split(";");
-        if (i > 0 && records[0] !== teamName)
+        if (i > 0 && records[0] !== teamName) {
             continue;
+        }
         array.push([]);
-        for (let j = 0; j < records.length; j++)
+        for (let j = 0; j < records.length; j++) {
             array[array.length - 1][j] = records[j];
-        if (i > 0)
+        }
+        if (i > 0) {
             break;
+        }
     }
-    if (array.length !== 2)
+    if (array.length !== 2) {
         return [];
+    }
     return array;
 }
 
 function docReady(fn) {
+    "use strict";
     if (document.readyState === "complete") {
         fn();
     } else {
@@ -32,6 +38,7 @@ function docReady(fn) {
 }
 
 function getCookie(cName) {
+    "use strict";
     let name = cName + "=";
     let decodedCookie = decodeURIComponent(document.cookie);
     let ca = decodedCookie.split(";");
@@ -48,6 +55,7 @@ function getCookie(cName) {
 }
 
 function setCookie(cName, cValue, exDays) {
+    "use strict";
     const d = new Date();
     d.setTime(d.getTime() + (exDays * 86400000));
     let expires = "expires=" + d.toUTCString();
@@ -55,8 +63,10 @@ function setCookie(cName, cValue, exDays) {
 }
 
 docReady(async () => {
-    if (Date.now() - localStorage.getItem("createdTimestamp") > 86400000)
+    "use strict";
+    if (Date.now() - localStorage.getItem("createdTimestamp") > 86400000) {
         localStorage.clear();
+    }
 
     document.getElementById("gameOverride").addEventListener("click", renderOverride);
     document.getElementById("overrideOK").addEventListener("click", override);
@@ -81,15 +91,17 @@ docReady(async () => {
         }
     });
     document.getElementById("qrGenerate").addEventListener("click", async function () {
-        await generateQR(csvFile)
+        await generateQR(csvFile);
     });
 });
 
 docReady(async () => {
+    "use strict";
     try {
         const logoRequest = await fetch("../assets/game/logo.svg", {method: "HEAD"});
-        if (!logoRequest.ok || !logoRequest.headers.get("Content-Type").includes("image"))
+        if (!logoRequest.ok || !logoRequest.headers.get("Content-Type").includes("image")) {
             document.getElementsByClassName("page-top-image")[0].src = "../assets/polarisLogo.svg";
+        }
     } catch (_) {
         document.getElementsByClassName("page-top-image")[0].src = "../assets/polarisLogo.svg";
     }
@@ -114,13 +126,17 @@ docReady(async () => {
             ih: imageHintsRequest.ok && imageHintsRequest.headers.get("Content-Type") === "text/csv",
             tc: textChallengesRequest.ok && textChallengesRequest.headers.get("Content-Type") === "text/csv",
             cl: checklistRequest.ok && checklistRequest.headers.get("Content-Type") === "text/csv"
-        }
+        };
 
         if (enabledFeatures.th || enabledFeatures.ih || enabledFeatures.tc) {
             let primaryFile = "";
-            if (enabledFeatures.th) primaryFile = "textHints";
-            else if (enabledFeatures.ih) primaryFile = "imageHints";
-            else if (enabledFeatures.tc) primaryFile = "textChallenges";
+            if (enabledFeatures.th) {
+                primaryFile = "textHints";
+            } else if (enabledFeatures.ih) {
+                primaryFile = "imageHints";
+            } else if (enabledFeatures.tc) {
+                primaryFile = "textChallenges";
+            }
             localStorage.setItem("primaryFile", primaryFile);
             localStorage.setItem("enabledFeatures", JSON.stringify(enabledFeatures));
         } else {
@@ -137,12 +153,13 @@ docReady(async () => {
         if (!checklist) {
             const checklist = [];
             const lines = (await (await fetch("assets/game/checklist.csv")).text()).split("\n");
-            for (let i = 0; i < lines.length; i++)
+            for (let i = 0; i < lines.length; i++) {
                 checklist.push({
                     id: i,
                     checked: false,
                     text: lines[i],
                 });
+            }
             localStorage.setItem("checklist", JSON.stringify(checklist));
         }
         checklist = localStorage.getItem("checklist");
@@ -169,8 +186,9 @@ docReady(async () => {
             });
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
-            if (item.checked)
+            if (item.checked) {
                 checkbox.checked = true;
+            }
             container.appendChild(checkbox);
             const text = document.createElement("span");
             text.innerHTML = item.text;
@@ -181,8 +199,9 @@ docReady(async () => {
             container.appendChild(text);
             document.getElementById("checklistBody").appendChild(container);
         }
-        for (const child of document.getElementById("checklistBody").children)
+        for (const child of document.getElementById("checklistBody").children) {
             height += child.offsetHeight + Number(getComputedStyle(child).marginTop.slice(0, -2)) + Number(getComputedStyle(child).marginBottom.slice(0, -2));
+        }
 
         let drawerOpen = false;
         document.getElementById("checklistDrawer").addEventListener("click", () => {
@@ -197,8 +216,9 @@ docReady(async () => {
             }
         });
         document.getElementById("checklistContainer").style.display = "block";
-    } else
+    } else {
         document.getElementById("checklistContainer").style.display = "none";
+    }
 
     if (params.get("team") === null && params.get("milestone") === null) {
         document.getElementById("welcome").style.display = "flex";
@@ -213,12 +233,12 @@ docReady(async () => {
 
     const team = getCookie("Team");
     if (team === "") {
-        alert(error2);
+        window.alert(error2);
         document.location.href = "../index.html";
         return;
     }
     if (params.get("team") === null || params.get("milestone") === null) {
-        alert(error1);
+        window.alert(error1);
         document.location.href = "../index.html";
         return;
     }
@@ -228,16 +248,17 @@ docReady(async () => {
         document.getElementById("finish").style.display = "flex";
         document.getElementById("button").innerHTML = "Validate Result";
         document.getElementById("button").addEventListener("click", validate);
-        document.title = "Validation | Scavenger Hunt"
+        document.title = "Validation | Scavenger Hunt";
     } else {
         document.getElementById("congratulations").style.display = "flex";
         document.getElementById("button").innerHTML = "View Hint";
         document.getElementById("button").addEventListener("click", hint);
-        document.title = "Found Hint | Scavenger Hunt"
+        document.title = "Found Hint | Scavenger Hunt";
     }
 });
 
 function renderHint(text, image, challenge) {
+    "use strict";
     let hintPresent = false;
     let challengePresent = false;
     if (text !== "NULL" && text !== "") {
@@ -255,19 +276,22 @@ function renderHint(text, image, challenge) {
         document.getElementById("challengeText").innerHTML = challenge;
         challengePresent = true;
     }
-    if (hintPresent && challengePresent)
+    if (hintPresent && challengePresent) {
         document.getElementById("hintDivider").style.display = "block";
-    else
+    } else {
         document.getElementById("hintDivider").style.display = "none";
+    }
     document.getElementById("hint").showModal();
 }
 
 async function onboarding() {
+    "use strict";
     const enabledFeatures = JSON.parse(localStorage.getItem("enabledFeatures"));
 
     let inputTeam = document.getElementById("team").value;
-    if (inputTeam === "")
+    if (inputTeam === "") {
         return;
+    }
 
     const values = new Map();
     if (enabledFeatures.th) {
@@ -298,24 +322,28 @@ async function onboarding() {
 
     setCookie("Team", primaryFileData[1][0], 1);
     let textHint;
-    if (enabledFeatures.th)
+    if (enabledFeatures.th) {
         textHint = values.get("textHints")[1][1];
-    else
+    } else {
         textHint = "NULL";
+    }
     let imageHint;
-    if (enabledFeatures.ih)
+    if (enabledFeatures.ih) {
         imageHint = values.get("imageHints")[1][1];
-    else
+    } else {
         imageHint = "NULL";
+    }
     let textChallenge;
-    if (enabledFeatures.tc)
+    if (enabledFeatures.tc) {
         textChallenge = values.get("textChallenges")[1][1];
-    else
+    } else {
         textChallenge = "NULL";
+    }
     renderHint(textHint, imageHint, textChallenge);
 }
 
 function hint() {
+    "use strict";
     if (getCookie("Team") !== params.get("team")) {
         document.getElementById("errorText").innerHTML = "This clue is not meant for your team.<br>Keep looking.";
         document.getElementById("error").showModal();
@@ -341,18 +369,22 @@ function hint() {
 
     const milestones = values.get(primaryFile)[0];
     let invalidMilestone = true;
-    for (let i = 1; i < milestones.length; i++)
-        if (milestones[i] === params.get("milestone"))
+    for (let i = 1; i < milestones.length; i++) {
+        if (milestones[i] === params.get("milestone")) {
             invalidMilestone = false;
+        }
+    }
     if (invalidMilestone) {
         document.getElementById("errorText").innerHTML = error1;
         document.getElementById("error").showModal();
     }
     const currentMilestone = milestones.indexOf(params.get("milestone"));
     let missingMilestone = false;
-    for (let i = 1; i < currentMilestone; i++)
-        if (getCookie(milestones[i]) !== "Granted")
+    for (let i = 1; i < currentMilestone; i++) {
+        if (getCookie(milestones[i]) !== "Granted") {
             missingMilestone = true;
+        }
+    }
     if (missingMilestone) {
         document.getElementById("errorText").innerHTML = "You're not supposed to be here yet.<br>Keep looking.";
         document.getElementById("error").showModal();
@@ -360,24 +392,28 @@ function hint() {
     }
     setCookie(milestones[currentMilestone], "Granted", 1);
     let textHint;
-    if (enabledFeatures.th)
+    if (enabledFeatures.th) {
         textHint = values.get("textHints")[1][currentMilestone + 1];
-    else
+    } else {
         textHint = "NULL";
+    }
     let imageHint;
-    if (enabledFeatures.ih)
+    if (enabledFeatures.ih) {
         imageHint = values.get("imageHints")[1][currentMilestone + 1];
-    else
+    } else {
         imageHint = "NULL";
+    }
     let textChallenge;
-    if (enabledFeatures.tc)
+    if (enabledFeatures.tc) {
         textChallenge = values.get("textChallenges")[1][currentMilestone + 1];
-    else
+    } else {
         textChallenge = "NULL";
+    }
     renderHint(textHint, imageHint, textChallenge);
 }
 
 function validate() {
+    "use strict";
     if (getCookie("Team") !== params.get("team")) {
         document.getElementById("errorText").innerHTML = "This is not your team's finishing point.<br>Keep looking.";
         document.getElementById("error").showModal();
@@ -407,7 +443,7 @@ function validate() {
         checkbox.classList.add("validate-checkbox");
         checkbox.onclick = () => {
             return false;
-        }
+        };
         if (getCookie(milestones[i]) === "Granted") {
             completionCounter--;
             checkbox.checked = true;
@@ -429,6 +465,7 @@ function validate() {
 }
 
 function renderOverride() {
+    "use strict";
     if (document.getElementById("overrideParent").getElementsByTagName("input").length > 1) {
         document.getElementById("override").showModal();
         return;
@@ -449,24 +486,29 @@ function renderOverride() {
 }
 
 function override() {
+    "use strict";
     const primaryFileData = JSON.parse(localStorage.getItem(localStorage.getItem("primaryFile")));
     const milestones = primaryFileData[0];
     let overrideTeam = document.getElementById("overrideTeam").value;
-    if (overrideTeam !== "")
+    if (overrideTeam !== "") {
         setCookie("Team", overrideTeam, 10);
+    }
     for (let i = 1; i < milestones.length; i++) {
-        if (document.getElementById("overrideMilestone" + i).value !== "")
+        if (document.getElementById("overrideMilestone" + i).value !== "") {
             setCookie(document.getElementById("overrideMilestone" + i).value, "Granted", 1);
+        }
     }
     closeDialogs();
 }
 
 function renderQR() {
+    "use strict";
     document.getElementById("progressBar").style.width = "0px";
     document.getElementById("qr").showModal();
 }
 
 function closeDialogs() {
+    "use strict";
     document.getElementById("error").close();
     document.getElementById("hint").close();
     document.getElementById("validation").close();
