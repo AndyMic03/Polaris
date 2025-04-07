@@ -97,30 +97,36 @@ docReady(async () => {
 
 docReady(async () => {
     "use strict";
+    let baseURL = window.location.href;
+    if (baseURL[baseURL.length - 1] === "/") {
+        baseURL = baseURL.slice(0, -1);
+    }
+    localStorage.setItem("baseURL", baseURL);
+
     try {
-        const logoRequest = await fetch("../assets/game/logo.svg", {method: "HEAD"});
+        const logoRequest = await fetch(baseURL + "/assets/game/logo.svg", {method: "HEAD"});
         if (!logoRequest.ok || !logoRequest.headers.get("Content-Type").includes("image")) {
-            document.getElementsByClassName("page-top-image")[0].src = "../assets/polarisLogo.svg";
+            document.getElementsByClassName("page-top-image")[0].src = baseURL + "/assets/polarisLogo.svg";
         }
     } catch (_) {
-        document.getElementsByClassName("page-top-image")[0].src = "../assets/polarisLogo.svg";
+        document.getElementsByClassName("page-top-image")[0].src = baseURL + "/assets/polarisLogo.svg";
     }
     try {
-        const faviconRequest = await fetch("../assets/game/favicon.svg", {method: "HEAD"});
+        const faviconRequest = await fetch(baseURL + "/assets/game/favicon.svg", {method: "HEAD"});
         if (!faviconRequest.ok || !faviconRequest.headers.get("Content-Type").includes("image")) {
             const link = document.querySelector("link[rel~='icon']");
-            link.href = "../assets/polarisLogo.svg";
+            link.href = baseURL + "/assets/polarisLogo.svg";
         }
     } catch (_) {
         const link = document.querySelector("link[rel~='icon']");
-        link.href = "../assets/polarisLogo.svg";
+        link.href = baseURL + "/assets/polarisLogo.svg";
     }
 
     if (!localStorage.getItem("enabledFeatures") || !localStorage.getItem("primaryFile")) {
-        const textHintsRequest = await fetch("assets/game/textHints.csv", {method: "HEAD"});
-        const imageHintsRequest = await fetch("assets/game/imageHints.csv", {method: "HEAD"});
-        const textChallengesRequest = await fetch("assets/game/textChallenges.csv", {method: "HEAD"});
-        const checklistRequest = await fetch("assets/game/checklist.csv", {method: "HEAD"});
+        const textHintsRequest = await fetch(baseURL + "/assets/game/textHints.csv", {method: "HEAD"});
+        const imageHintsRequest = await fetch(baseURL + "/assets/game/imageHints.csv", {method: "HEAD"});
+        const textChallengesRequest = await fetch(baseURL + "/assets/game/textChallenges.csv", {method: "HEAD"});
+        const checklistRequest = await fetch(baseURL + "/assets/game/checklist.csv", {method: "HEAD"});
         const enabledFeatures = {
             th: textHintsRequest.ok && textHintsRequest.headers.get("Content-Type").includes("text/csv"),
             ih: imageHintsRequest.ok && imageHintsRequest.headers.get("Content-Type").includes("text/csv"),
@@ -152,7 +158,7 @@ docReady(async () => {
         let checklist = localStorage.getItem("checklist");
         if (!checklist) {
             const checklist = [];
-            const lines = (await (await fetch("assets/game/checklist.csv")).text()).split("\n");
+            const lines = (await (await fetch(baseURL + "/assets/game/checklist.csv")).text()).split("\n");
             for (let i = 0; i < lines.length; i++) {
                 checklist.push({
                     id: i,
@@ -224,7 +230,7 @@ docReady(async () => {
         document.getElementById("welcome").style.display = "flex";
         document.title = "Welcome | Polaris";
 
-        const primaryFileData = await (await fetch("assets/game/" + localStorage.getItem("primaryFile") + ".csv")).text();
+        const primaryFileData = await (await fetch(baseURL + "/assets/game/" + localStorage.getItem("primaryFile") + ".csv")).text();
         document.getElementById("gameName").innerHTML = primaryFileData.split("\n")[0].split(";")[0];
         document.getElementById("button").innerHTML = "Begin";
         document.getElementById("button").addEventListener("click", onboarding);
@@ -287,6 +293,7 @@ function renderHint(text, image, challenge) {
 async function onboarding() {
     "use strict";
     const enabledFeatures = JSON.parse(localStorage.getItem("enabledFeatures"));
+    const baseURL = localStorage.getItem("baseURL");
 
     let inputTeam = document.getElementById("team").value;
     if (inputTeam === "") {
@@ -295,17 +302,17 @@ async function onboarding() {
 
     const values = new Map();
     if (enabledFeatures.th) {
-        const textHints = parseFile(await (await fetch("assets/game/textHints.csv")).text(), inputTeam);
+        const textHints = parseFile(await (await fetch(baseURL + "/assets/game/textHints.csv")).text(), inputTeam);
         values.set("textHints", textHints);
         localStorage.setItem("textHints", JSON.stringify(textHints));
     }
     if (enabledFeatures.ih) {
-        const imageHints = parseFile(await (await fetch("assets/game/imageHints.csv")).text(), inputTeam);
+        const imageHints = parseFile(await (await fetch(baseURL + "/assets/game/imageHints.csv")).text(), inputTeam);
         values.set("imageHints", imageHints);
         localStorage.setItem("imageHints", JSON.stringify(imageHints));
     }
     if (enabledFeatures.tc) {
-        const textChallenges = parseFile(await (await fetch("assets/game/textChallenges.csv")).text(), inputTeam);
+        const textChallenges = parseFile(await (await fetch(baseURL + "/assets/game/textChallenges.csv")).text(), inputTeam);
         values.set("textChallenges", textChallenges);
         localStorage.setItem("textChallenges", JSON.stringify(textChallenges));
     }
