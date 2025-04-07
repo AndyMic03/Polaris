@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=0.8" name="viewport">
-    <title>Scavenger Hunt</title>
+    <title>Polaris</title>
     <link href="assets/game/favicon.svg" rel="icon">
     <link href="css/branding.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
@@ -65,10 +65,10 @@
         <div class="v-container" id="validationParent">
         </div>
         <div class="h-container" id="completionLabel">
-            <span style="margin-right: 5px">Completed at:</span>
+            <span style="margin-right: 5px;">Completed at:</span>
             <span class="validate-time" id="completionTime"></span>
         </div>
-        <span id="validationError" style="display: none"></span>
+        <span id="validationError" style="display: none;"></span>
         <button class="dialog-button" id="validateOK">OK</button>
     </div>
 </dialog>
@@ -79,9 +79,9 @@
             <label for="overrideTeam"></label>
             <input class="dialog-input" id="overrideTeam" placeholder="Team Name" type="text">
         </div>
-        <span id="overrideError" style="display: none"></span>
+        <span id="overrideError" style="display: none;"></span>
         <div class="h-container">
-            <button class="dialog-button" id="overrideExit" style="margin-right: 10px">Exit</button>
+            <button class="dialog-button" id="overrideExit" style="margin-right: 10px;">Exit</button>
             <button class="dialog-button" id="overrideOK">OK</button>
         </div>
     </div>
@@ -90,7 +90,7 @@
     <div class="v-container">
         <h2>Generate QR Codes PDF</h2>
         <div class="v-container">
-            <input accept="text/csv" id="csvFile" required style="display: none" type="file">
+            <input accept="text/csv" id="csvFile" required style="display: none;" type="file">
             <button class="qr-button" id="csvUpload">Upload CSV File</button>
             <label for="base_url"></label>
             <input class="dialog-input" id="base_url" name="base_url" placeholder="Base URL" type="text">
@@ -98,7 +98,7 @@
                 <div class="progress-bar" id="progressBar"></div>
             </div>
             <div class="h-container dialog-button-container">
-                <button class="dialog-button" id="qrExit" style="margin-right: 10px">Exit</button>
+                <button class="dialog-button" id="qrExit" style="margin-right: 10px;">Exit</button>
                 <button class="dialog-button" id="qrGenerate">Generate</button>
             </div>
             <p class="open-source">This module uses <a href="https://www.npmjs.com/package/qr-code-styling">qr-code-styling</a>

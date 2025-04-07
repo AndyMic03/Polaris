@@ -1,9 +1,12 @@
 {
+  "scripts": {
+    "build": "vite build"
+  },
   "dependencies": {
     "qr-code-styling": "^1.9.1",
     "jspdf": "^3.0.1"
   },
   "devDependencies": {
-    "vite": "^6.2.3"
+    "vite": "^6.2.5"
   }
 }

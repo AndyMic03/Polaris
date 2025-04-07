@@ -75,6 +75,9 @@ function addImage(doc, image) {
 
 export async function generateQR(csvFile) {
     "use strict";
+    hCounter = 0;
+    vCounter = 0;
+
     if (csvFile === undefined) {
         return;
     }
@@ -94,6 +97,7 @@ export async function generateQR(csvFile) {
 
     document.getElementById("progressContainer").style.display = "block";
     document.getElementById("progressBar").style.width = "0px";
+    document.getElementById("progressBar").style.borderRadius = "10px 0 0 10px";
 
     let totalCodes = 0;
     for (let i = 1; i < locations.length; i++) {

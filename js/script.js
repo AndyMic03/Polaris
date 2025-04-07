@@ -122,10 +122,10 @@ docReady(async () => {
         const textChallengesRequest = await fetch("assets/game/textChallenges.csv", {method: "HEAD"});
         const checklistRequest = await fetch("assets/game/checklist.csv", {method: "HEAD"});
         const enabledFeatures = {
-            th: textHintsRequest.ok && textHintsRequest.headers.get("Content-Type") === "text/csv",
-            ih: imageHintsRequest.ok && imageHintsRequest.headers.get("Content-Type") === "text/csv",
-            tc: textChallengesRequest.ok && textChallengesRequest.headers.get("Content-Type") === "text/csv",
-            cl: checklistRequest.ok && checklistRequest.headers.get("Content-Type") === "text/csv"
+            th: textHintsRequest.ok && textHintsRequest.headers.get("Content-Type").includes("text/csv"),
+            ih: imageHintsRequest.ok && imageHintsRequest.headers.get("Content-Type").includes("text/csv"),
+            tc: textChallengesRequest.ok && textChallengesRequest.headers.get("Content-Type").includes("text/csv"),
+            cl: checklistRequest.ok && checklistRequest.headers.get("Content-Type").includes("text/csv")
         };
 
         if (enabledFeatures.th || enabledFeatures.ih || enabledFeatures.tc) {
@@ -141,8 +141,8 @@ docReady(async () => {
             localStorage.setItem("enabledFeatures", JSON.stringify(enabledFeatures));
         } else {
             document.getElementById("welcome").style.display = "flex";
-            document.title = "Welcome | Scavenger Hunt";
-            document.getElementById("gameName").innerHTML = "Polaris Scavenger Hunt";
+            document.title = "Welcome | Polaris";
+            document.getElementById("gameName").innerHTML = "Polaris Game";
             document.getElementById("button").innerHTML = "GAME NOT READY";
             return;
         }
@@ -222,7 +222,7 @@ docReady(async () => {
 
     if (params.get("team") === null && params.get("milestone") === null) {
         document.getElementById("welcome").style.display = "flex";
-        document.title = "Welcome | Scavenger Hunt";
+        document.title = "Welcome | Polaris";
 
         const primaryFileData = await (await fetch("assets/game/" + localStorage.getItem("primaryFile") + ".csv")).text();
         document.getElementById("gameName").innerHTML = primaryFileData.split("\n")[0].split(";")[0];
@@ -248,12 +248,12 @@ docReady(async () => {
         document.getElementById("finish").style.display = "flex";
         document.getElementById("button").innerHTML = "Validate Result";
         document.getElementById("button").addEventListener("click", validate);
-        document.title = "Validation | Scavenger Hunt";
+        document.title = "Validation | Polaris";
     } else {
         document.getElementById("congratulations").style.display = "flex";
         document.getElementById("button").innerHTML = "View Hint";
         document.getElementById("button").addEventListener("click", hint);
-        document.title = "Found Hint | Scavenger Hunt";
+        document.title = "Found Hint | Polaris";
     }
 });
 
