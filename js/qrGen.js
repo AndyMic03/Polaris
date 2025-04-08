@@ -18,7 +18,7 @@ async function makeQR(link, text) {
         height: Math.min(canvas.width, canvas.height),
         type: "svg",
         data: link,
-        image: "./assets/polarisLogo.svg",
+        image: localStorage.getItem("baseURL") + "/assets/polarisLogo.svg",
         margin: Math.round(Math.min(canvas.width, canvas.height) * 0.01),
         qrOptions: {
             errorCorrectionLevel: "H"

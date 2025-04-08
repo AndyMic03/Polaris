@@ -1,12 +1,16 @@
 {
+  "type": "module",
   "scripts": {
-    "build": "vite build"
+    "build": "vite build",
+    "dev": "vite dev --host --port 5173",
+    "test": "npx playwright test"
   },
   "dependencies": {
-    "qr-code-styling": "^1.9.1",
-    "jspdf": "^3.0.1"
+    "jspdf": "^3.0.1",
+    "qr-code-styling": "^1.9.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.51.1",
     "vite": "^6.2.5"
   }
 }

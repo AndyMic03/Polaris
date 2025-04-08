@@ -12,5 +12,9 @@ export default defineConfig({
             }
         },
         assetsInlineLimit: 0
+    },
+    server: {
+        host: true,
+        port: 5173
     }
 });
