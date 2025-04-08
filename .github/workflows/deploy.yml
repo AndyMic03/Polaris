@@ -43,7 +43,7 @@ jobs:
 
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     needs: build
     timeout-minutes: 60
 
@@ -106,6 +106,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: production-files
+          path: ./production-files
 
       - name: Zip artifact contents
         run: |
