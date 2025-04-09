@@ -5,46 +5,127 @@ const params = new URLSearchParams(window.location.search);
 const error1 = "Error 1: The URL Arguments are missing or wrong. Please contact the Game Organizer.";
 const error2 = "Error 2: The website Cookies are missing or wrong. Please contact the Game Organizer.";
 
-function parseFile(fileCsv, teamName) {
+export function parseCSV(file) {
     "use strict";
-    if (fileCsv === null) {
+    if (file === null || typeof file !== 'string') {
         throw "Invalid file";
     }
-    let array = [];
-    const lines = fileCsv.trim().split("\n");
-    for (let i = 0; i < lines.length; i++) {
-        const records = lines[i].split(";");
-        if (i > 0 && records[0].trim() !== teamName) {
-            continue;
-        }
-        array.push([]);
-        for (let j = 0; j < records.length; j++) {
-            const record = records[j].trim();
-            if (record !== "") {
-                array[array.length - 1].push(record);
+    file = file.trim();
+
+    let insideQuotes = false;
+    let lines = [];
+    let records = [];
+    let currentRecord = "";
+    for (let i = 0; i < file.length; i++) {
+        const char = file[i];
+        const nextChar = (i + 1 < file.length) ? file[i + 1] : null;
+
+        if (insideQuotes) {
+            if (char === "\"") {
+                if (nextChar === "\"") {
+                    currentRecord += "{escaped-quote}";
+                    i++;
+                } else {
+                    insideQuotes = false;
+                }
+            } else if (char === ",") {
+                currentRecord += "{enclosed-comma}";
+            } else if (char === "\r") {
+                currentRecord += "{enclosed-newline}";
+                if (nextChar === "\n") {
+                    i++;
+                }
+            } else if (char === "\n") {
+                currentRecord += "{enclosed-newline}";
+            } else {
+                currentRecord += char;
+            }
+        } else {
+            if (char === "\"") {
+                insideQuotes = true;
+                if (nextChar === "\"") {
+                    insideQuotes = false;
+                    i++;
+                }
+            } else if (char === ",") {
+                records.push(currentRecord);
+                currentRecord = "";
+            } else if (char === "\r") {
+                records.push(currentRecord);
+                lines.push(records);
+                records = [];
+                currentRecord = "";
+                if (nextChar === "\n") {
+                    i++;
+                }
+            } else if (char === "\n") {
+                records.push(currentRecord);
+                lines.push(records);
+                records = [];
+                currentRecord = "";
+            } else {
+                currentRecord += char;
             }
         }
-        if (i > 0) {
+    }
+
+    if (currentRecord !== "" || records.length > 0) {
+        records.push(currentRecord);
+        lines.push(records);
+    }
+
+    let array = [];
+    for (let i = 0; i < lines.length; i++) {
+        const records = lines[i];
+        let processedRow = [];
+        for (let j = 0; j < records.length; j++) {
+            let record = records[j].trim();
+            record = record.replaceAll("{escaped-quote}", "\"");
+            record = record.replaceAll("{enclosed-newline}", "\n");
+            record = record.replaceAll("{enclosed-comma}", ",");
+            processedRow.push(record);
+        }
+        array.push(processedRow);
+    }
+
+    if (array.length > 0) {
+        const expectedLength = array[0].length;
+        for (let i = 1; i < array.length; i++) {
+            if (array[i].length !== expectedLength) {
+                throw `Invalid file`;
+            }
+        }
+    } else {
+        throw "Invalid file";
+    }
+    return array;
+}
+
+function getTeamData(fileCSV, teamName) {
+    "use strict";
+
+    let parsedCSV;
+    try {
+        parsedCSV = parseCSV(fileCSV);
+    } catch (error) {
+        throw error;
+    }
+
+    let array = [];
+    for (let i = 0; i < parsedCSV.length; i++) {
+        const row = parsedCSV[i];
+        if (i === 0 || (row.length > 0 && row[0].trim() === teamName)) {
+            array.push(row);
+        }
+        if (array.length === 2 && i > 0) {
             break;
         }
     }
-    switch (array.length) {
-        case 0:
-            throw "Invalid file";
-        case 1:
-            if (lines.length > 1) {
-                throw "Team not found";
-            } else {
-                throw "Invalid file";
-            }
-        case 2:
-            if (array[0].length === array[1].length) {
-                return array;
-            } else {
-                throw "Invalid file";
-            }
-        default:
-            throw "Invalid file";
+
+    if (array.length === 2) {
+        return array;
+    } else {
+        throw "Team not found";
     }
 }
 
@@ -187,6 +268,7 @@ docReady(async () => {
         }
     } catch (_) {
         document.getElementsByClassName("page-top-image")[0].src = baseURL + "/assets/polarisLogo.svg";
+        window.console.warn("A game logo was not included.");
     }
     try {
         const faviconRequest = await fetch(baseURL + "/assets/game/favicon.svg", {method: "HEAD"});
@@ -197,6 +279,7 @@ docReady(async () => {
     } catch (_) {
         const link = document.querySelector("link[rel~='icon']");
         link.href = baseURL + "/assets/polarisLogo.svg";
+        window.console.warn("A favicon was not included.");
     }
 
     if (!localStorage.getItem("enabledFeatures") || !localStorage.getItem("primaryFile")) {
@@ -303,7 +386,7 @@ docReady(async () => {
 
     if (params.get("team") === null && params.get("milestone") === null) {
         const primaryFileData = await (await fetch(baseURL + "/assets/game/" + localStorage.getItem("primaryFile") + ".csv")).text();
-        renderWelcome(primaryFileData.split("\n")[0].split(";")[0]);
+        renderWelcome(parseCSV(primaryFileData)[0][0]);
         return;
     }
 
@@ -367,13 +450,14 @@ async function onboarding() {
     const values = new Map();
     if (enabledFeatures.th) {
         try {
-            const textHints = parseFile(await (await fetch(baseURL + "/assets/game/textHints.csv")).text(), inputTeam);
+            const textHints = getTeamData(await (await fetch(baseURL + "/assets/game/textHints.csv")).text(), inputTeam);
             values.set("textHints", textHints);
             localStorage.setItem("textHints", JSON.stringify(textHints));
         } catch (error) {
             switch (error) {
                 case "Invalid file":
                     enabledFeatures.th = false;
+                    window.console.warn("The file textHints.csv is invalid.");
                     break;
                 case "Team not found":
                     document.getElementById("errorText").innerHTML = "Team Name Invalid";
@@ -384,13 +468,14 @@ async function onboarding() {
     }
     if (enabledFeatures.ih) {
         try {
-            const imageHints = parseFile(await (await fetch(baseURL + "/assets/game/imageHints.csv")).text(), inputTeam);
+            const imageHints = getTeamData(await (await fetch(baseURL + "/assets/game/imageHints.csv")).text(), inputTeam);
             values.set("imageHints", imageHints);
             localStorage.setItem("imageHints", JSON.stringify(imageHints));
         } catch (error) {
             switch (error) {
                 case "Invalid file":
                     enabledFeatures.ih = false;
+                    window.console.warn("The file imageHints.csv is invalid.");
                     break;
                 case "Team not found":
                     document.getElementById("errorText").innerHTML = "Team Name Invalid";
@@ -401,13 +486,14 @@ async function onboarding() {
     }
     if (enabledFeatures.tc) {
         try {
-            const textChallenges = parseFile(await (await fetch(baseURL + "/assets/game/textChallenges.csv")).text(), inputTeam);
+            const textChallenges = getTeamData(await (await fetch(baseURL + "/assets/game/textChallenges.csv")).text(), inputTeam);
             values.set("textChallenges", textChallenges);
             localStorage.setItem("textChallenges", JSON.stringify(textChallenges));
         } catch (error) {
             switch (error) {
                 case "Invalid file":
                     enabledFeatures.tc = false;
+                    window.console.warn("The file textChallenges.csv is invalid.");
                     break;
                 case "Team not found":
                     document.getElementById("errorText").innerHTML = "Team Name Invalid";

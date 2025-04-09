@@ -12,7 +12,8 @@ will point the player to the location of Team A's Milestone 2.
 
 > **_NOTE:_** If a field doesn't require a value, use NULL to ensure proper functionality.
 
-> **_IMPORTANT:_** All CSV files must be encoded using semicolon (;) separators. This is crucial for Polaris to
+> **_IMPORTANT:_** All CSV files must be encoded using comma (,) field delimiters and double-quotes (") as string
+> delimiters. This is crucial for Polaris to
 > correctly interpret the data.
 
 ### Text Hints

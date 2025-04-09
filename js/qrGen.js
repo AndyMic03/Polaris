@@ -1,5 +1,6 @@
 import QRCodeStyling from "qr-code-styling";
 import {jsPDF} from "jspdf";
+import {parseCSV} from "./script.js";
 
 const pageWidth = 1188;
 const pageHeight = 840;
@@ -78,13 +79,12 @@ export async function generateQR(csvFile) {
     hCounter = 0;
     vCounter = 0;
 
-    if (csvFile === undefined) {
+    let locations;
+    try {
+        locations = parseCSV(csvFile);
+    } catch (error) {
+        window.alert(error);
         return;
-    }
-    let locations = [];
-    const rows = csvFile.split("\n");
-    for (const row of rows) {
-        locations.push(row.split(";"));
     }
 
     const baseURL = document.getElementById("base_url").value;

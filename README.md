@@ -41,7 +41,7 @@ challenges, checklist, locations using CSV files) and customizing images (logo, 
 
 - **CSV Files:** Game data (hints, challenges, locations, checklist) is managed via CSV files stored in the
   `assets/game/` directory.
-  * Files must use **semicolon (;) separators**.
+    * Files must use **comma (,) separators**.
   * Team names and milestone names must be consistent across files.
   * Use `NULL` for empty fields where applicable.
 - **Images:** Place custom `logo.svg` and `favicon.svg` in the `assets/game/` folder. Default Polaris logos will be used
@@ -54,8 +54,7 @@ Polaris is a static web application.
 
 1. **Dependencies:** While primarily static, the QR code generation feature utilizes client-side JavaScript libraries.
    Ensure you have Node.js and npm installed if you intend to modify or build the project using Vite.
-
-* Run `npm install` to install development dependencies if needed.
+    * Run `npm install` to install development dependencies if needed.
 
 2. **Build (Optional):** If modifications were made, you can build the project using `npm run build` (assuming a
    relevant script exists in `package.json` based on the `vite.config.js` setup).
@@ -96,31 +95,6 @@ Polaris is a static web application.
   - **[jsPDF](https://www.npmjs.com/package/jspdf):** Used for generating the QR code PDF document (MIT License).
 - **Development**:
   - **[Vite](https://vitejs.dev/):** Used for building the project.
-
-## Contributing
-
-**Reporting Issues:**
-
-* Use the GitHub Issues section to report bugs, suggest features, or ask questions.
-* Please provide as much detail as possible, including steps to reproduce the issue, expected behavior, and actual
-  behavior.
-* Include relevant information like browser version, operating system, and any error messages.
-
-**Submitting Pull Requests:**
-
-1. **Fork the repository:** Create your own copy of the project.
-2. **Create a branch:** Make a new branch in your fork for your changes (e.g.,
-   `git checkout -b feature/your-feature-name` or `bugfix/issue-description`).
-3. **Make your changes:** Implement your feature or bug fix. Ensure your code follows the existing style and
-   conventions.
-4. **Test your changes:** Make sure your changes don't introduce new issues and that the application still works
-   correctly.
-5. **Commit your changes:** Write clear and concise commit messages explaining the purpose of your changes.
-6. **Push your changes:** Push your branch to your forked repository.
-7. **Open a Pull Request:** Submit a pull request from your branch to the main Polaris repository's `main` branch.
-   Provide a clear description of the changes you've made and why.
-
-We appreciate your contributions to making Polaris better!
 
 ## License
 
