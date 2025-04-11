@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="200" height="200">
+    <defs>
+        <style>
+            @keyframes a { from { opacity: 1; } to { opacity: 0; } }
+            .b {
+            animation-name: a;
+            animation-duration: 0.5s;
+            animation-iteration-count: infinite;
+            fill: #7ac143;
+            height: 15px;
+            width: 5px;
+            ry: 3px;
+            rx: 2.5px;
+            y: 17.5px;
+            x: 47.5px;
+            }
+        </style>
+    </defs>
+    <g>
+        <g transform="rotate(0 50 50)">
+            <rect class="b" style="animation-delay: -0.4666666666666667s;"/>
+        </g>
+        <g transform="rotate(24 50 50)">
+            <rect class="b" style="animation-delay: -0.43333333333333335s;"/>
+        </g>
+        <g transform="rotate(48 50 50)">
+            <rect class="b" style="animation-delay: -0.4s;"/>
+        </g>
+        <g transform="rotate(72 50 50)">
+            <rect class="b" style="animation-delay: -0.36666666666666664s;"/>
+        </g>
+        <g transform="rotate(96 50 50)">
+            <rect class="b" style="animation-delay: -0.3333333333333333s;"/>
+        </g>
+        <g transform="rotate(120 50 50)">
+            <rect class="b" style="animation-delay: -0.3s;"/>
+        </g>
+        <g transform="rotate(144 50 50)">
+            <rect class="b" style="animation-delay: -0.26666666666666666s;"/>
+        </g>
+        <g transform="rotate(168 50 50)">
+            <rect class="b" style="animation-delay: -0.23333333333333334s;"/>
+        </g>
+        <g transform="rotate(192 50 50)">
+            <rect class="b" style="animation-delay: -0.2s;"/>
+        </g>
+        <g transform="rotate(216 50 50)">
+            <rect class="b" style="animation-delay: -0.16666666666666666s;"/>
+        </g>
+        <g transform="rotate(240 50 50)">
+            <rect class="b" style="animation-delay: -0.13333333333333333s;"/>
+        </g>
+        <g transform="rotate(264 50 50)">
+            <rect class="b" style="animation-delay: -0.1s;"/>
+        </g>
+        <g transform="rotate(288 50 50)">
+            <rect class="b" style="animation-delay: -0.06666666666666667s;"/>
+        </g>
+        <g transform="rotate(312 50 50)">
+            <rect class="b" style="animation-delay: -0.03333333333333333s;"/>
+        </g>
+        <g transform="rotate(336 50 50)">
+            <rect class="b"/>
+        </g>
+    </g>
+</svg>
