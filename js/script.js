@@ -209,6 +209,10 @@ function renderWelcome(gameName) {
     document.getElementById("page").style.display = "flex";
     document.getElementById("button").innerHTML = "Begin";
     document.getElementById("button").addEventListener("click", onboarding);
+    document.getElementById("loading").style.opacity = "0";
+    setTimeout(() => {
+        document.getElementById("loading").style.display = "none";
+    }, 1000);
 }
 
 function renderCongratulations() {
@@ -224,6 +228,10 @@ function renderCongratulations() {
     document.getElementById("page").style.display = "flex";
     document.getElementById("button").innerHTML = "View Hint";
     document.getElementById("button").addEventListener("click", hint);
+    document.getElementById("loading").style.opacity = "0";
+    setTimeout(() => {
+        document.getElementById("loading").style.display = "none";
+    }, 1000);
 }
 
 function renderFinish() {
@@ -239,6 +247,10 @@ function renderFinish() {
     document.getElementById("page").style.display = "flex";
     document.getElementById("button").innerHTML = "Validate Result";
     document.getElementById("button").addEventListener("click", validate);
+    document.getElementById("loading").style.opacity = "0";
+    setTimeout(() => {
+        document.getElementById("loading").style.display = "none";
+    }, 1000);
 }
 
 docReady(async () => {
@@ -248,6 +260,9 @@ docReady(async () => {
         baseURL = window.location.href;
         if (baseURL[baseURL.length - 1] === "/") {
             baseURL = baseURL.slice(0, -1);
+        }
+        if (baseURL.slice(baseURL.length - 11) === "/index.html") {
+            baseURL = baseURL.slice(0, baseURL.length - 11);
         }
         localStorage.setItem("baseURL", baseURL);
     } else {
@@ -261,37 +276,20 @@ docReady(async () => {
         }
     }
 
-    try {
-        const logoRequest = await fetch(baseURL + "/assets/game/logo.svg", {method: "HEAD"});
-        if (!logoRequest.ok || !logoRequest.headers.get("Content-Type").includes("image")) {
-            document.getElementsByClassName("page-top-image")[0].src = baseURL + "/assets/polarisLogo.svg";
-        }
-    } catch (_) {
-        document.getElementsByClassName("page-top-image")[0].src = baseURL + "/assets/polarisLogo.svg";
-        window.console.warn("A game logo was not included.");
-    }
-    try {
-        const faviconRequest = await fetch(baseURL + "/assets/game/favicon.svg", {method: "HEAD"});
-        if (!faviconRequest.ok || !faviconRequest.headers.get("Content-Type").includes("image")) {
-            const link = document.querySelector("link[rel~='icon']");
-            link.href = baseURL + "/assets/polarisLogo.svg";
-        }
-    } catch (_) {
-        const link = document.querySelector("link[rel~='icon']");
-        link.href = baseURL + "/assets/polarisLogo.svg";
-        window.console.warn("A favicon was not included.");
-    }
-
     if (!localStorage.getItem("enabledFeatures") || !localStorage.getItem("primaryFile")) {
         const textHintsRequest = await fetch(baseURL + "/assets/game/textHints.csv", {method: "HEAD"});
         const imageHintsRequest = await fetch(baseURL + "/assets/game/imageHints.csv", {method: "HEAD"});
         const textChallengesRequest = await fetch(baseURL + "/assets/game/textChallenges.csv", {method: "HEAD"});
         const checklistRequest = await fetch(baseURL + "/assets/game/checklist.csv", {method: "HEAD"});
+        const logoRequest = await fetch(baseURL + "/assets/game/logo.svg", {method: "HEAD"});
+        const faviconRequest = await fetch(baseURL + "/assets/game/favicon.svg", {method: "HEAD"});
         const enabledFeatures = {
             th: textHintsRequest.ok && textHintsRequest.headers.get("Content-Type").includes("text/csv"),
             ih: imageHintsRequest.ok && imageHintsRequest.headers.get("Content-Type").includes("text/csv"),
             tc: textChallengesRequest.ok && textChallengesRequest.headers.get("Content-Type").includes("text/csv"),
-            cl: checklistRequest.ok && checklistRequest.headers.get("Content-Type").includes("text/csv")
+            cl: checklistRequest.ok && checklistRequest.headers.get("Content-Type").includes("text/csv"),
+            lg: logoRequest.ok && logoRequest.headers.get("Content-Type").includes("image/svg+xml"),
+            fv: faviconRequest.ok && faviconRequest.headers.get("Content-Type").includes("image/svg+xml"),
         };
 
         if (enabledFeatures.th || enabledFeatures.ih || enabledFeatures.tc) {
@@ -306,13 +304,33 @@ docReady(async () => {
             localStorage.setItem("primaryFile", primaryFile);
             localStorage.setItem("enabledFeatures", JSON.stringify(enabledFeatures));
         } else {
+            document.getElementsByClassName("page-top-image")[0].src = baseURL + "/assets/polarisLogo.svg";
+            document.querySelector("link[rel~='icon']").href = baseURL + "/assets/polarisLogo.svg";
             renderWelcome("Polaris Game");
             document.getElementById("button").innerHTML = "GAME NOT READY";
             return;
         }
     }
 
-    if (JSON.parse(localStorage.getItem("enabledFeatures")).cl) {
+    const enabledFeatures = JSON.parse(localStorage.getItem("enabledFeatures"));
+
+    const logo = document.getElementsByClassName("page-top-image")[0];
+    if (enabledFeatures.lg) {
+        logo.src = baseURL + "/assets/game/logo.svg";
+    } else {
+        logo.src = baseURL + "/assets/polarisLogo.svg";
+        window.console.warn("A game logo was not included.");
+    }
+
+    const favicon = document.querySelector("link[rel~='icon']");
+    if (enabledFeatures.fv) {
+        favicon.href = baseURL + "/assets/game/favicon.svg";
+    } else {
+        favicon.href = baseURL + "/assets/polarisLogo.svg";
+        window.console.warn("A favicon was not included.");
+    }
+
+    if (enabledFeatures.cl) {
         let checklist = localStorage.getItem("checklist");
         if (!checklist) {
             const checklist = [];

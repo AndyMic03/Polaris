@@ -4,15 +4,19 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=0.8" name="viewport">
     <title>Polaris</title>
-    <link href="assets/game/favicon.svg" rel="icon">
-    <link href="css/branding.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link rel="icon">
+    <link href="./css/branding.css" rel="stylesheet">
+    <link href="./css/style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,200&icon_names=celebration,social_leaderboard"
           rel="stylesheet"/>
 </head>
 <body>
+<div class="loading-container" id="loading">
+    <img alt="Polaris Logo" class="polaris-logo" src="./assets/images/polarisLogo.svg">
+    <img alt="Loading Spinner" class="polaris-logo" src="./assets/images/spinner.svg">
+</div>
 <div class="page-container" id="page">
-    <img alt="Game Logo" class="page-top-image" id="logo" src="/assets/game/logo.svg">
+    <img alt="Game Logo" class="page-top-image" id="logo" src="">
     <span class="material-symbols-rounded page-top-image" id="icon">celebration</span>
     <h1 class="title" id="title"></h1>
     <span class="description" id="description">We would like to welcome you to the</span>
@@ -26,7 +30,7 @@
 <span class="footer-link" id="generateQR">Generate QR Codes</span>
 <footer id="footer">
     Powered by Polaris
-    <img alt="Polaris Logo" class="polaris-logo" src="/assets/images/polarisLogo.svg">
+    <img alt="Polaris Logo" class="polaris-logo" src="./assets/images/polarisLogo.svg">
 </footer>
 <dialog id="hint">
     <div class="v-container">
@@ -83,7 +87,7 @@
             <input accept="text/csv" id="csvFile" required style="display: none;" type="file">
             <button class="qr-button" id="csvUpload">Upload CSV File</button>
             <label for="base_url"></label>
-            <input class="dialog-input" id="base_url" name="base_url" placeholder="Base URL" type="text">
+            <input class="dialog-input team-input" id="base_url" name="base_url" placeholder="Base URL" type="text">
             <div class="progress-container" id="progressContainer">
                 <div class="progress-bar" id="progressBar"></div>
             </div>

@@ -2,9 +2,14 @@
 
 ## Additions
 
-- Added a parseCSV function
-- Added warnings for invalid or missing files
+- Added a loading screen
 
 ## Improvements
 
-- Changed the default field delimiter for the CSVs to be the comma, improving compatibility with spreadsheet apps
+- Added the logo and favicon to the enabledFeatures
+- Widened the dialog padding
+
+## Fixes
+
+- Added a check to prevent baseURL issues
+- Fixed consistency issues
