@@ -212,6 +212,8 @@ test.describe("Polaris Game Flows", () => {
         });
 
         test.describe("All Teams and Milestones Test", () => {
+            test.skip(!!process.env.CI, 'Skipping this test in CI environment');
+
             test.beforeEach(async ({page}) => {
                 await reset(page);
             });

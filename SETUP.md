@@ -10,6 +10,14 @@ Google Sheets and export them as CSV files.
 Each location has a team and a milestone. Milestones track progression, for example, the hint for Team A at Milestone 1,
 will point the player to the location of Team A's Milestone 2.
 
+Polaris also supports a "Teamless Mode". In this mode, individual players can play the game without needing to input a
+team name. The sequence of milestones (hints/challenges) is automatically randomized for each player when they begin,
+providing a unique path through the game.
+
+To enable Teamless Mode, simply use the specific team name `Teamless` in the first column of the row within
+your textHints.csv, imageHints.csv, or textChallenges.csv files. If the row with the team name Teamless exists, the game
+will automatically start in this mode when a user first visits, randomizing the milestone order from the row's data.
+
 > **_NOTE:_** If a field doesn't require a value, use NULL to ensure proper functionality.
 
 > **_IMPORTANT:_** All CSV files must be encoded using comma (,) field delimiters and double-quotes (") as string
@@ -58,12 +66,23 @@ row in the CSV represents a different challenge.
 
 ## Table Structure
 
+### Team Game
+
 | Game Name | Milestone 1 | Milestone 2 | Milestone 3 | Milestone n |
 |-----------|-------------|-------------|-------------|-------------|
 | Team 1    | ...         | ...         | ...         | ...         |
 | Team 2    | ...         | ...         | ...         | ...         |
 | Team 3    | ...         | ...         | ...         | ...         |
 | Team n    | ...         | ...         | ...         | ...         |
+
+### Teamless Game
+
+| Game Name | Milestone 1 | Milestone 2 | Milestone 3 | Milestone n |
+|-----------|-------------|-------------|-------------|-------------|
+| Teamless  | ...         | ...         | ...         | ...         |
+
+> **_Note:_** In Teamless mode, the order of the milestones will be randomized for each player.
+>
 
 ## Images
 

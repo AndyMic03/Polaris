@@ -113,7 +113,7 @@ export async function generateQR(csvFile) {
                 addImage(doc, img);
             }
             const url = baseURL + "/?team=" + locations[i][0] + "&milestone=" + locations[0][j];
-            const img = await makeQR(url.replaceAll(" ", "%20"), locations[i][j]);
+            const img = await makeQR(encodeURIComponent(url), locations[i][j]);
             addImage(doc, img);
             processedCodes++;
             document.getElementById("progressBar").style.width = (processedCodes / totalCodes) * 100 + "%";

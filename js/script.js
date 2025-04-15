@@ -3,7 +3,6 @@ import {generateQR} from "./qrGen";
 const params = new URLSearchParams(window.location.search);
 
 const error1 = "Error 1: The URL Arguments are missing or wrong. Please contact the Game Organizer.";
-const error2 = "Error 2: The website Cookies are missing or wrong. Please contact the Game Organizer.";
 
 export function parseCSV(file) {
     "use strict";
@@ -80,6 +79,9 @@ export function parseCSV(file) {
         let processedRow = [];
         for (let j = 0; j < records.length; j++) {
             let record = records[j].trim();
+            if (record.includes("<script>")) {
+                throw "Invalid file";
+            }
             record = record.replaceAll("{escaped-quote}", "\"");
             record = record.replaceAll("{enclosed-newline}", "\n");
             record = record.replaceAll("{enclosed-comma}", ",");
@@ -163,12 +165,8 @@ function setCookie(cName, cValue, exDays) {
     document.cookie = cName + "=" + cValue + ";" + expires + ";path=/";
 }
 
-docReady(async () => {
+docReady(() => {
     "use strict";
-    if (Date.now() - localStorage.getItem("createdTimestamp") > 86400000) {
-        localStorage.clear();
-    }
-
     document.getElementById("gameOverride").addEventListener("click", renderOverride);
     document.getElementById("overrideOK").addEventListener("click", override);
     document.getElementById("generateQR").addEventListener("click", renderQR);
@@ -196,7 +194,7 @@ docReady(async () => {
     });
 });
 
-function renderWelcome(gameName) {
+function renderWelcome(gameName, isTeamless) {
     "use strict";
     document.title = "Welcome | Polaris";
     document.getElementById("logo").style.display = "block";
@@ -205,10 +203,14 @@ function renderWelcome(gameName) {
     document.getElementById("description").innerHTML = "We would like to welcome you to the";
     document.getElementById("gameName").style.display = "block";
     document.getElementById("gameName").innerHTML = gameName;
-    document.getElementById("team").style.display = "block";
-    document.getElementById("page").style.display = "flex";
+    if (isTeamless) {
+        document.getElementById("team").style.display = "none";
+        document.getElementById("button").addEventListener("click", teamlessOnboarding);
+    } else {
+        document.getElementById("team").style.display = "block";
+        document.getElementById("button").addEventListener("click", onboarding);
+    }
     document.getElementById("button").innerHTML = "Begin";
-    document.getElementById("button").addEventListener("click", onboarding);
     document.getElementById("loading").style.opacity = "0";
     setTimeout(() => {
         document.getElementById("loading").style.display = "none";
@@ -225,7 +227,6 @@ function renderCongratulations() {
     document.getElementById("description").innerHTML = "You have at arrived at your next clue.<br>Please click the button below to see your clue.";
     document.getElementById("gameName").style.display = "none";
     document.getElementById("team").style.display = "none";
-    document.getElementById("page").style.display = "flex";
     document.getElementById("button").innerHTML = "View Hint";
     document.getElementById("button").addEventListener("click", hint);
     document.getElementById("loading").style.opacity = "0";
@@ -244,7 +245,6 @@ function renderFinish() {
     document.getElementById("description").innerHTML = "You have finished the game.<br>Please submit your score after clicking validate.";
     document.getElementById("gameName").style.display = "none";
     document.getElementById("team").style.display = "none";
-    document.getElementById("page").style.display = "flex";
     document.getElementById("button").innerHTML = "Validate Result";
     document.getElementById("button").addEventListener("click", validate);
     document.getElementById("loading").style.opacity = "0";
@@ -253,8 +253,27 @@ function renderFinish() {
     }, 1000);
 }
 
+function getPrimaryFile(enabledFeatures) {
+    "use strict";
+    if (enabledFeatures.th) {
+        return "textHints";
+    } else if (enabledFeatures.ih) {
+        return "imageHints";
+    } else if (enabledFeatures.tc) {
+        return "textChallenges";
+    } else {
+        document.getElementById("errorText").innerHTML = "No valid CSV files are present.";
+        document.getElementById("error").showModal();
+    }
+}
+
 docReady(async () => {
     "use strict";
+
+    if (Date.now() - localStorage.getItem("createdTimestamp") > 86400000) {
+        localStorage.clear();
+    }
+
     let baseURL;
     if (params.size === 0) {
         baseURL = window.location.href;
@@ -293,13 +312,9 @@ docReady(async () => {
         };
 
         if (enabledFeatures.th || enabledFeatures.ih || enabledFeatures.tc) {
-            let primaryFile = "";
-            if (enabledFeatures.th) {
-                primaryFile = "textHints";
-            } else if (enabledFeatures.ih) {
-                primaryFile = "imageHints";
-            } else if (enabledFeatures.tc) {
-                primaryFile = "textChallenges";
+            const primaryFile = getPrimaryFile(enabledFeatures);
+            if (!primaryFile) {
+                return;
             }
             localStorage.setItem("primaryFile", primaryFile);
             localStorage.setItem("enabledFeatures", JSON.stringify(enabledFeatures));
@@ -403,14 +418,14 @@ docReady(async () => {
     }
 
     if (params.get("team") === null && params.get("milestone") === null) {
-        const primaryFileData = await (await fetch(baseURL + "/assets/game/" + localStorage.getItem("primaryFile") + ".csv")).text();
-        renderWelcome(parseCSV(primaryFileData)[0][0]);
+        const primaryFileText = await (await fetch(baseURL + "/assets/game/" + localStorage.getItem("primaryFile") + ".csv")).text();
+        const primaryFileData = parseCSV(primaryFileText);
+        renderWelcome(primaryFileData[0][0], (primaryFileData[1][0] === "Teamless" && primaryFileData.length === 2));
         return;
     }
 
     const team = getCookie("Team");
     if (team === "") {
-        window.alert(error2);
         document.location.href = "../index.html";
         return;
     }
@@ -455,12 +470,35 @@ function renderHint(text, image, challenge) {
     document.getElementById("hint").showModal();
 }
 
+function onboardingHint(enabledFeatures) {
+    "use strict";
+    let textHint;
+    if (enabledFeatures.th) {
+        textHint = JSON.parse(localStorage.getItem("textHints"))[1][1];
+    } else {
+        textHint = "NULL";
+    }
+    let imageHint;
+    if (enabledFeatures.ih) {
+        imageHint = JSON.parse(localStorage.getItem("imageHints"))[1][1];
+    } else {
+        imageHint = "NULL";
+    }
+    let textChallenge;
+    if (enabledFeatures.tc) {
+        textChallenge = JSON.parse(localStorage.getItem("textChallenges"))[1][1];
+    } else {
+        textChallenge = "NULL";
+    }
+    renderHint(textHint, imageHint, textChallenge);
+}
+
 async function onboarding() {
     "use strict";
     const enabledFeatures = JSON.parse(localStorage.getItem("enabledFeatures"));
     const baseURL = localStorage.getItem("baseURL");
 
-    let inputTeam = document.getElementById("team").value;
+    let inputTeam = document.getElementById("team").value.trim();
     if (inputTeam === "") {
         return;
     }
@@ -523,45 +561,142 @@ async function onboarding() {
 
     localStorage.setItem("enabledFeatures", JSON.stringify(enabledFeatures));
 
-    let primaryFile = "";
-    if (enabledFeatures.th) {
-        primaryFile = "textHints";
-    } else if (enabledFeatures.ih) {
-        primaryFile = "imageHints";
-    } else if (enabledFeatures.tc) {
-        primaryFile = "textChallenges";
-    } else {
-        document.getElementById("errorText").innerHTML = "No valid CSV files are present.";
-        document.getElementById("error").showModal();
+    const primaryFile = getPrimaryFile(enabledFeatures);
+    if (!primaryFile) {
         return;
     }
 
     const primaryFileData = values.get(primaryFile);
+
+    let mismatch = false;
+    if (enabledFeatures.ih) {
+        if (JSON.stringify(values.get("imageHints")[0]) !== JSON.stringify(primaryFileData[0])) {
+            mismatch = true;
+        }
+    } else if (enabledFeatures.tc) {
+        if (JSON.stringify(values.get("textChallenges")[0]) !== JSON.stringify(primaryFileData[0])) {
+            mismatch = true;
+        }
+    }
+    if (mismatch) {
+        document.getElementById("errorText").innerHTML = "The CSV files have mismatched Milestones or a mismatched name.";
+        document.getElementById("error").showModal();
+        return;
+    }
 
     localStorage.setItem("primaryFile", primaryFile);
     localStorage.setItem("createdTimestamp", String(Date.now()));
     localStorage.setItem("finalMilestone", primaryFileData[0][primaryFileData[0].length - 1]);
 
     setCookie("Team", primaryFileData[1][0], 1);
-    let textHint;
+    onboardingHint(enabledFeatures);
+}
+
+function reorderGameData(gameData, order) {
+    "use strict";
+    const newData = window.structuredClone(gameData);
+    for (let i = 1; i < gameData[1].length; i++) {
+        newData[1][i] = gameData[1][order[i - 1]];
+    }
+    return newData;
+}
+
+async function teamlessOnboarding() {
+    "use strict";
+    if (localStorage.getItem(localStorage.getItem("primaryFile"))) {
+        onboardingHint();
+        return;
+    }
+
+    const enabledFeatures = JSON.parse(localStorage.getItem("enabledFeatures"));
+    const baseURL = localStorage.getItem("baseURL");
+
+    const values = new Map();
     if (enabledFeatures.th) {
-        textHint = values.get("textHints")[1][1];
-    } else {
-        textHint = "NULL";
+        try {
+            const textHints = getTeamData(await (await fetch(baseURL + "/assets/game/textHints.csv")).text(), "Teamless");
+            values.set("textHints", textHints);
+        } catch (error) {
+            enabledFeatures.th = false;
+            window.console.warn("The file textHints.csv is invalid.");
+        }
     }
-    let imageHint;
     if (enabledFeatures.ih) {
-        imageHint = values.get("imageHints")[1][1];
-    } else {
-        imageHint = "NULL";
+        try {
+            const imageHints = getTeamData(await (await fetch(baseURL + "/assets/game/imageHints.csv")).text(), "Teamless");
+            values.set("imageHints", imageHints);
+        } catch (error) {
+            enabledFeatures.ih = false;
+            window.console.warn("The file imageHints.csv is invalid.");
+        }
     }
-    let textChallenge;
     if (enabledFeatures.tc) {
-        textChallenge = values.get("textChallenges")[1][1];
-    } else {
-        textChallenge = "NULL";
+        try {
+            const textChallenges = getTeamData(await (await fetch(baseURL + "/assets/game/textChallenges.csv")).text(), "Teamless");
+            values.set("textChallenges", textChallenges);
+        } catch (error) {
+            enabledFeatures.tc = false;
+            window.console.warn("The file textChallenges.csv is invalid.");
+        }
     }
-    renderHint(textHint, imageHint, textChallenge);
+
+    localStorage.setItem("enabledFeatures", JSON.stringify(enabledFeatures));
+
+    const primaryFile = getPrimaryFile(enabledFeatures);
+    if (!primaryFile) {
+        return;
+    }
+
+    const primaryFileData = values.get(primaryFile);
+
+    let mismatch = false;
+    if (enabledFeatures.ih) {
+        if (JSON.stringify(values.get("imageHints")[0]) !== JSON.stringify(primaryFileData[0])) {
+            mismatch = true;
+        }
+    } else if (enabledFeatures.tc) {
+        if (JSON.stringify(values.get("textChallenges")[0]) !== JSON.stringify(primaryFileData[0])) {
+            mismatch = true;
+        }
+    }
+    if (mismatch) {
+        document.getElementById("errorText").innerHTML = "The CSV files have mismatched Milestones or a mismatched name.";
+        document.getElementById("error").showModal();
+        return;
+    }
+
+    const order = [];
+    for (let i = 1; i < primaryFileData[0].length; i++) {
+        order.push(i);
+    }
+    let currentIndex = order.length;
+    let randomIndex;
+    while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        [order[currentIndex], order[randomIndex]] = [order[randomIndex], order[currentIndex]];
+    }
+
+    if (enabledFeatures.th) {
+        values.set("textHints", reorderGameData(values.get("textHints"), order));
+        localStorage.setItem("textHints", JSON.stringify(values.get("textHints")));
+    }
+    if (enabledFeatures.ih) {
+        values.set("imageHints", reorderGameData(values.get("imageHints"), order));
+        localStorage.setItem("imageHints", JSON.stringify(values.get("imageHints")));
+    }
+    if (enabledFeatures.tc) {
+        values.set("textChallenges", reorderGameData(values.get("textChallenges"), order));
+        localStorage.setItem("textChallenges", JSON.stringify(values.get("textChallenges")));
+    }
+
+    localStorage.setItem("primaryFile", primaryFile);
+    localStorage.setItem("createdTimestamp", String(Date.now()));
+    localStorage.setItem("finalMilestone", primaryFileData[0][primaryFileData[0].length - 1]);
+
+    setCookie("Team", "Teamless", 1);
+    onboardingHint(enabledFeatures);
 }
 
 function hint() {

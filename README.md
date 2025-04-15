@@ -22,6 +22,7 @@ This flexibility makes Polaris highly adaptable for various events and settings.
 - **📋 Game Checklist:** Features an optional general checklist of tasks participants can complete anytime during the
   game.
 - **✅ Game Validation:** Provides a validation screen at the end to check milestone completion.
+- **👤 Optional Teamless Mode:** Allows configuration for individual play where milestone order is randomized per player.
 - **📷 QR Code Integration:** Utilizes QR codes for easy check-in at locations and clue retrieval.
 - **🍪 Progress Tracking**: Uses browser cookies to maintain team progress, allowing players to resume if they leave the
   game.
@@ -64,7 +65,9 @@ Polaris is a static web application.
 ## Game Flow
 
 1. **Access the Game:** Players navigate to the hosted `index.html` page.
-2. **Enter Team Name:** Players enter their designated team name to begin.
+2. **Enter Team Name / Start Game:** If the game is configured with specific teams, players enter their designated team
+   name to begin. If the game is configured in Teamless Mode (using the Teamless identifier in the CSV), the game may
+   start automatically for the player without requiring a team name entry.
 3. **Receive First Clue:** Upon starting, the first clue (and challenge, if applicable) is displayed.
 4. **Navigate & Scan:** Players solve the clue, go to the location, and find the corresponding QR code. Scanning the QR
    code directs them to the next step in the game.
@@ -86,15 +89,15 @@ Polaris is a static web application.
 ## Dependencies
 
 - **Runtime**:
-  - None (core game logic uses standard browser features).
+    - None (core game logic uses standard browser features).
 - **UI**:
-  - **[Google Fonts](https://fonts.google.com/icons):** Utilizes Material Symbols Rounded for icons.
+    - **[Google Fonts](https://fonts.google.com/icons):** Utilizes Material Symbols Rounded for icons.
 - **QR Code Generation**:
-  - **[qr-code-styling](https://www.npmjs.com/package/qr-code-styling):** Used for generating stylized QR codes (MIT
-    License).
-  - **[jsPDF](https://www.npmjs.com/package/jspdf):** Used for generating the QR code PDF document (MIT License).
+    - **[qr-code-styling](https://www.npmjs.com/package/qr-code-styling):** Used for generating stylized QR codes (MIT
+      License).
+    - **[jsPDF](https://www.npmjs.com/package/jspdf):** Used for generating the QR code PDF document (MIT License).
 - **Development**:
-  - **[Vite](https://vitejs.dev/):** Used for building the project.
+    - **[Vite](https://vitejs.dev/):** Used for building the project.
 
 ## License
 
