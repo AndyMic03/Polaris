@@ -435,8 +435,7 @@ docReady(async () => {
         return;
     }
 
-    const finalMilestone = localStorage.getItem("finalMilestone");
-    if (params.get("team") === team && params.get("milestone") === finalMilestone) {
+    if (params.get("team") === team && params.get("milestone") === localStorage.getItem("finalMilestone")) {
         renderFinish();
     } else {
         renderCongratulations();
@@ -595,7 +594,8 @@ async function onboarding() {
 function reorderGameData(gameData, order) {
     "use strict";
     const newData = window.structuredClone(gameData);
-    for (let i = 1; i < gameData[1].length; i++) {
+    for (let i = 1; i < gameData[0].length; i++) {
+        newData[0][i] = gameData[0][order[i - 1]];
         newData[1][i] = gameData[1][order[i - 1]];
     }
     return newData;
