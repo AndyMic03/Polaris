@@ -277,9 +277,6 @@ docReady(async () => {
     let baseURL;
     if (params.size === 0) {
         baseURL = window.location.href;
-        if (baseURL.includes("?")) {
-            baseURL = baseURL.slice(0, baseURL.indexOf("?"));
-        }
         if (baseURL[baseURL.length - 1] === "/") {
             baseURL = baseURL.slice(0, -1);
         }
@@ -290,9 +287,15 @@ docReady(async () => {
     } else {
         baseURL = localStorage.getItem("baseURL");
         if (!baseURL) {
-            baseURL = window.location.origin;
+            baseURL = window.location.href;
+            if (baseURL.includes("?")) {
+                baseURL = baseURL.slice(0, baseURL.indexOf("?"));
+            }
             if (baseURL[baseURL.length - 1] === "/") {
                 baseURL = baseURL.slice(0, -1);
+            }
+            if (baseURL.slice(baseURL.length - 11) === "/index.html") {
+                baseURL = baseURL.slice(0, baseURL.length - 11);
             }
             localStorage.setItem("baseURL", baseURL);
         }
