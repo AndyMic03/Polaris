@@ -432,12 +432,12 @@ docReady(async () => {
 
     const team = getCookie("Team");
     if (team === "") {
-        document.location.href = "../index.html";
+        document.location.href = baseURL + "/index.html";
         return;
     }
     if (params.get("team") === null || params.get("milestone") === null) {
         window.alert(error1);
-        document.location.href = "../index.html";
+        document.location.href = baseURL + "/index.html";
         return;
     }
 
