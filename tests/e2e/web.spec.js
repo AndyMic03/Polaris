@@ -87,7 +87,7 @@ test.describe("Polaris Game Flows", () => {
             // Expect the error dialog to appear after the fetch attempt fails
             const errorDialog = page.locator("#error");
             await expect(errorDialog).toBeVisible({timeout: 10000}); // Increase timeout for potential fetch
-            await expect(errorDialog.locator("#errorText")).toHaveText("Team Name Invalid");
+            await expect(errorDialog.locator("#errorText")).toHaveText("The given team name is invalid.");
 
             // Close the error dialog
             await errorDialog.locator("#errorOK").click();
@@ -212,7 +212,7 @@ test.describe("Polaris Game Flows", () => {
         });
 
         test.describe("All Teams and Milestones Test", () => {
-            test.skip(!!process.env.CI, 'Skipping this test in CI environment');
+            test.skip(!!process.env.CI, "Skipping this test in CI environment");
 
             test.beforeEach(async ({page}) => {
                 await reset(page);

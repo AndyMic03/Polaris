@@ -1,6 +1,6 @@
 import QRCodeStyling from "qr-code-styling";
 import {jsPDF} from "jspdf";
-import {parseCSV} from "./script.js";
+import {parseCSV} from "./game.js";
 
 const pageWidth = 1188;
 const pageHeight = 840;
