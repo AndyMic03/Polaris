@@ -78,7 +78,7 @@ export function parseCSV(file) {
         }
     }
 
-    if (currentRecord !== "" || records.length > 0) {
+    if (currentRecord.trim() !== "" || records.length > 0) {
         records.push(currentRecord);
         lines.push(records);
     }
@@ -476,7 +476,7 @@ docReady(async () => {
         document.getElementById("checklistContainer").style.display = "none";
     }
 
-    if ((params.get("team") === null && params.get("milestone") === null) || getCookie("Team") === "") {
+    if ((params.get("team") === null && params.get("milestone") === null) || getCookie("Team").trim() === "") {
         const primaryFileText = await (await fetch(baseURL + "/assets/game/" + localStorage.getItem("primaryFile") + ".csv")).text();
         const primaryFileData = parseCSV(primaryFileText);
         renderWelcome(primaryFileData[0][0], (primaryFileData[1][0] === "Teamless" && primaryFileData.length === 2));
@@ -812,17 +812,17 @@ function renderHint(text, image, challenge) {
     let hintPresent = false;
     let challengePresent = false;
 
-    if (text !== null && text.toLowerCase() !== "null" && text !== "") {
+    if (text !== null && text.toLowerCase() !== "null" && text.trim() !== "") {
         document.getElementById("hintContainer").style.display = "flex";
         document.getElementById("hintText").innerHTML = text;
         hintPresent = true;
     }
-    if (image !== null && image.toLowerCase() !== "null" && image !== "") {
+    if (image !== null && image.toLowerCase() !== "null" && image.trim() !== "") {
         document.getElementById("hintImage").style.display = "inline";
         document.getElementById("hintImage").src = image;
         hintPresent = true;
     }
-    if (challenge !== null && challenge.toLowerCase() !== "null" && challenge !== "") {
+    if (challenge !== null && challenge.toLowerCase() !== "null" && challenge.trim() !== "") {
         document.getElementById("challengeContainer").style.display = "flex";
         document.getElementById("challengeText").innerHTML = challenge;
         challengePresent = true;
@@ -974,11 +974,11 @@ function override() {
     const primaryFileData = JSON.parse(localStorage.getItem(localStorage.getItem("primaryFile")));
     const milestones = primaryFileData[0];
     let overrideTeam = document.getElementById("overrideTeam").value;
-    if (overrideTeam !== "") {
+    if (overrideTeam.trim() !== "") {
         setCookie("Team", overrideTeam, 10);
     }
     for (let i = 1; i < milestones.length; i++) {
-        if (document.getElementById("overrideMilestone" + i).value !== "") {
+        if (document.getElementById("overrideMilestone" + i).value.trim() !== "") {
             setCookie(document.getElementById("overrideMilestone" + i).value, "Granted", 1);
         }
     }
