@@ -10,7 +10,7 @@
     "qr-code-styling": "^1.9.2"
   },
   "devDependencies": {
-    "@playwright/test": "^1.55.0",
+    "@playwright/test": "^1.55.1",
     "vite": "^7.1.7"
   }
 }
