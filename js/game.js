@@ -256,9 +256,8 @@ docReady(() => {
 /**
  * Renders the welcome screen.
  * @param {string} gameName - The name of the game.
- * @param {boolean} isTeamless - True if the game is teamless, false otherwise.
  */
-function renderWelcome(gameName, isTeamless) {
+function renderWelcome(gameName) {
     "use strict";
     document.title = "Welcome | Polaris";
     document.getElementById("logo").style.display = "block";
@@ -268,15 +267,15 @@ function renderWelcome(gameName, isTeamless) {
     document.getElementById("gameName").style.display = "block";
     document.getElementById("gameName").innerHTML = gameName;
     document.getElementById("button").onclick = null;
-    if (isTeamless) {
+    if (JSON.parse(localStorage.getItem("features")).tl) {
         document.getElementById("team").style.display = "none";
         document.getElementById("button").addEventListener("click", () => {
-            handleOnboarding(isTeamless);
+            handleOnboarding();
         });
     } else {
         document.getElementById("team").style.display = "block";
         document.getElementById("button").addEventListener("click", () => {
-            handleOnboarding(isTeamless);
+            handleOnboarding();
         });
     }
     document.getElementById("button").innerHTML = "Begin";
@@ -336,17 +335,17 @@ function renderFinish() {
 
 /**
  * Determines the primary game file based on enabled features.
- * @param {object} enabledFeatures - An object indicating available game files.
+ * @param {object} features - An object indicating available game files.
  * @returns {string} The name of the primary file (e.g., "textHints") or null if none.
  * @throws {Error} When no primary file is found.
  */
-function getPrimaryFile(enabledFeatures) {
+function getPrimaryFile(features) {
     "use strict";
-    if (enabledFeatures.th) {
+    if (features.th) {
         return "textHints";
-    } else if (enabledFeatures.ih) {
+    } else if (features.ih) {
         return "imageHints";
-    } else if (enabledFeatures.tc) {
+    } else if (features.tc) {
         return "textChallenges";
     } else {
         throw new Error("No valid CSV files are present.");
@@ -420,13 +419,19 @@ docReady(async () => {
         localStorage.setItem("baseURL", baseURL);
     }
 
-    if (!localStorage.getItem("enabledFeatures") || !localStorage.getItem("primaryFile")) {
-        let enabledFeatures;
+    if (!localStorage.getItem("features") || !localStorage.getItem("primaryFile")) {
+        let features;
         try {
-            enabledFeatures = await quickFeatureCheck(baseURL);
-            const primaryFile = getPrimaryFile(enabledFeatures);
+            features = await quickFeatureCheck(baseURL);
+            const primaryFile = getPrimaryFile(features);
+
+            const primaryFileText = await (await fetch(`${baseURL}/assets/game/${primaryFile}.csv`)).text();
+            const primaryFileData = parseCSV(primaryFileText);
+
+            features.tl = primaryFileData[1][0] === "Teamless" && primaryFileData.length === 2;
+
             localStorage.setItem("primaryFile", primaryFile);
-            localStorage.setItem("enabledFeatures", JSON.stringify(enabledFeatures));
+            localStorage.setItem("features", JSON.stringify(features));
         } catch (e) {
             document.getElementsByClassName("page-top-image")[0].src = baseURL + "/assets/polarisLogo.svg";
             document.querySelector("link[rel~='icon']").href = baseURL + "/assets/polarisLogo.svg";
@@ -437,10 +442,10 @@ docReady(async () => {
         }
     }
 
-    const enabledFeatures = JSON.parse(localStorage.getItem("enabledFeatures"));
+    const features = JSON.parse(localStorage.getItem("features"));
 
     const logo = document.getElementsByClassName("page-top-image")[0];
-    if (enabledFeatures.lg) {
+    if (features.lg) {
         logo.src = baseURL + "/assets/game/logo.svg";
     } else {
         logo.src = baseURL + "/assets/polarisLogo.svg";
@@ -448,14 +453,14 @@ docReady(async () => {
     }
 
     const favicon = document.querySelector("link[rel~='icon']");
-    if (enabledFeatures.fv) {
+    if (features.fv) {
         favicon.href = baseURL + "/assets/game/favicon.svg";
     } else {
         favicon.href = baseURL + "/assets/polarisLogo.svg";
         window.console.warn("A favicon was not included.");
     }
 
-    if (enabledFeatures.cl) {
+    if (features.cl) {
         let checklist = localStorage.getItem("checklist");
         if (!checklist) {
             const checklist = [];
@@ -574,32 +579,35 @@ function reorderGameData(gameData, order) {
 /**
  * Logic for player/team onboarding. Fetches data, validates, and sets up initial state.
  * @param {string} inputTeam - The team name entered by the user.
- * @param {boolean} isTeamless
  * @returns {Promise<{textHint: string | null, imageHint: string | null, textChallenge: string | null}>} Hint data for the first milestone ({textHint, imageHint, textChallenge}).
  * @throws {Error} If onboarding fails (e.g., team not found, data mismatch).
  */
-async function onboarding(inputTeam, isTeamless) {
+async function onboarding(inputTeam) {
     "use strict";
-    const enabledFeatures = JSON.parse(localStorage.getItem("enabledFeatures"));
+    const features = JSON.parse(localStorage.getItem("features"));
     const baseURL = localStorage.getItem("baseURL");
 
-    if (!isTeamless && (!inputTeam || inputTeam.trim() === "")) {
+    if (features.tl) {
+        inputTeam = "Teamless";
+    }
+
+    if (!inputTeam || inputTeam.trim() === "") {
         throw new Error("Please enter a team team.");
     }
 
     const values = new Map();
-    if (enabledFeatures.th) {
+    if (features.th) {
         try {
             const textHints = await getTeamData(baseURL + "/assets/game/textHints.csv", inputTeam);
             values.set("textHints", textHints);
         } catch (error) {
             switch (error.message) {
                 case "Invalid file":
-                    enabledFeatures.th = false;
+                    features.th = false;
                     window.console.warn("The file textHints.csv is invalid.");
                     break;
                 case "Failed to get the specified file.":
-                    enabledFeatures.th = false;
+                    features.th = false;
                     window.console.warn("Failed to retrieve textHints.csv.");
                     break;
                 case "Team not found":
@@ -607,18 +615,18 @@ async function onboarding(inputTeam, isTeamless) {
             }
         }
     }
-    if (enabledFeatures.ih) {
+    if (features.ih) {
         try {
             const imageHints = await getTeamData(baseURL + "/assets/game/imageHints.csv", inputTeam);
             values.set("imageHints", imageHints);
         } catch (error) {
             switch (error.message) {
                 case "Invalid file":
-                    enabledFeatures.ih = false;
+                    features.ih = false;
                     window.console.warn("The file imageHints.csv is invalid.");
                     break;
                 case "Failed to get the specified file.":
-                    enabledFeatures.th = false;
+                    features.th = false;
                     window.console.warn("Failed to retrieve textHints.csv.");
                     break;
                 case "Team not found":
@@ -626,18 +634,18 @@ async function onboarding(inputTeam, isTeamless) {
             }
         }
     }
-    if (enabledFeatures.tc) {
+    if (features.tc) {
         try {
             const textChallenges = await getTeamData(baseURL + "/assets/game/textChallenges.csv", inputTeam);
             values.set("textChallenges", textChallenges);
         } catch (error) {
             switch (error.message) {
                 case "Invalid file":
-                    enabledFeatures.tc = false;
+                    features.tc = false;
                     window.console.warn("The file textChallenges.csv is invalid.");
                     break;
                 case "Failed to get the specified file.":
-                    enabledFeatures.th = false;
+                    features.th = false;
                     window.console.warn("Failed to retrieve textHints.csv.");
                     break;
                 case "Team not found":
@@ -646,11 +654,11 @@ async function onboarding(inputTeam, isTeamless) {
         }
     }
 
-    localStorage.setItem("enabledFeatures", JSON.stringify(enabledFeatures));
+    localStorage.setItem("features", JSON.stringify(features));
 
     let primaryFile;
     try {
-        primaryFile = getPrimaryFile(enabledFeatures);
+        primaryFile = getPrimaryFile(features);
     } catch (error) {
         throw error;
     }
@@ -658,13 +666,13 @@ async function onboarding(inputTeam, isTeamless) {
     const primaryFileData = values.get(primaryFile);
 
     let mismatch = false;
-    if (enabledFeatures.th && JSON.stringify(values.get("textHints")[0]) !== JSON.stringify(primaryFileData[0])) {
+    if (features.th && JSON.stringify(values.get("textHints")[0]) !== JSON.stringify(primaryFileData[0])) {
         mismatch = true;
     }
-    if (enabledFeatures.ih && JSON.stringify(values.get("imageHints")[0]) !== JSON.stringify(primaryFileData[0])) {
+    if (features.ih && JSON.stringify(values.get("imageHints")[0]) !== JSON.stringify(primaryFileData[0])) {
         mismatch = true;
     }
-    if (enabledFeatures.tc && JSON.stringify(values.get("textChallenges")[0]) !== JSON.stringify(primaryFileData[0])) {
+    if (features.tc && JSON.stringify(values.get("textChallenges")[0]) !== JSON.stringify(primaryFileData[0])) {
         mismatch = true;
     }
     if (mismatch) {
@@ -672,7 +680,7 @@ async function onboarding(inputTeam, isTeamless) {
     }
 
     const order = [];
-    if (isTeamless) {
+    if (features.tl) {
         for (let i = 1; i < primaryFileData[0].length; i++) {
             order.push(i);
         }
@@ -687,22 +695,22 @@ async function onboarding(inputTeam, isTeamless) {
     }
 
     let textHint = null, imageHint = null, textChallenge = null;
-    if (enabledFeatures.th) {
-        if (isTeamless) {
+    if (features.th) {
+        if (features.tl) {
             values.set("textHints", reorderGameData(values.get("textHints"), order));
         }
         localStorage.setItem("textHints", JSON.stringify(values.get("textHints")));
         textHint = values.get("textHints")[1][1];
     }
-    if (enabledFeatures.ih) {
-        if (isTeamless) {
+    if (features.ih) {
+        if (features.tl) {
             values.set("imageHints", reorderGameData(values.get("imageHints"), order));
         }
         localStorage.setItem("imageHints", JSON.stringify(values.get("imageHints")));
         imageHint = values.get("imageHints")[1][1];
     }
-    if (enabledFeatures.tc) {
-        if (isTeamless) {
+    if (features.tc) {
+        if (features.tl) {
             values.set("textChallenges", reorderGameData(values.get("textChallenges"), order));
         }
         localStorage.setItem("textChallenges", JSON.stringify(values.get("textChallenges")));
@@ -720,16 +728,23 @@ async function onboarding(inputTeam, isTeamless) {
 /**
  * Handles the UI interaction for onboarding. Calls the `onboarding` logic
  * and renders the first hint or an error message.
- * @param {boolean} isTeamless - True if the game is teamless.
  */
-async function handleOnboarding(isTeamless) {
+async function handleOnboarding() {
     "use strict";
     try {
-        const {
-            textHint,
-            imageHint,
-            textChallenge
-        } = await onboarding(document.getElementById("team").value, isTeamless);
+        let textHint;
+        let imageHint;
+        let textChallenge;
+        if (!localStorage.getItem(localStorage.getItem("primaryFile"))) {
+            const result = await onboarding(document.getElementById("team").value);
+            textHint = result.textHint;
+            imageHint = result.imageHint;
+            textChallenge = result.textChallenge;
+        } else {
+            textHint = localStorage.getItem("textHints") ? JSON.parse(localStorage.getItem("textHints"))[1][1] : null;
+            imageHint = localStorage.getItem("imageHints") ? JSON.parse(localStorage.getItem("imageHints"))[1][1] : null;
+            textChallenge = localStorage.getItem("textChallenges") ? JSON.parse(localStorage.getItem("textChallenges"))[1][1] : null;
+        }
         renderHint(textHint, imageHint, textChallenge);
     } catch (error) {
         document.getElementById("errorText").innerHTML = error.message;
@@ -752,19 +767,19 @@ function calculateHint() {
         throw new Error("This clue is not meant for your team.<br>Keep looking.");
     }
 
-    const enabledFeatures = JSON.parse(localStorage.getItem("enabledFeatures"));
+    const features = JSON.parse(localStorage.getItem("features"));
     const primaryFile = localStorage.getItem("primaryFile");
 
     const values = new Map();
-    if (enabledFeatures.th) {
+    if (features.th) {
         const textHints = JSON.parse(localStorage.getItem("textHints"));
         values.set("textHints", textHints);
     }
-    if (enabledFeatures.ih) {
+    if (features.ih) {
         const imageHints = JSON.parse(localStorage.getItem("imageHints"));
         values.set("imageHints", imageHints);
     }
-    if (enabledFeatures.tc) {
+    if (features.tc) {
         const textChallenges = JSON.parse(localStorage.getItem("textChallenges"));
         values.set("textChallenges", textChallenges);
     }
@@ -781,19 +796,19 @@ function calculateHint() {
     }
     setCookie(milestones[currentMilestone], "Granted", 1);
     let textHint;
-    if (enabledFeatures.th) {
+    if (features.th) {
         textHint = values.get("textHints")[1][currentMilestone + 2];
     } else {
         textHint = null;
     }
     let imageHint;
-    if (enabledFeatures.ih) {
+    if (features.ih) {
         imageHint = values.get("imageHints")[1][currentMilestone + 2];
     } else {
         imageHint = null;
     }
     let textChallenge;
-    if (enabledFeatures.tc) {
+    if (features.tc) {
         textChallenge = values.get("textChallenges")[1][currentMilestone + 2];
     } else {
         textChallenge = null;
