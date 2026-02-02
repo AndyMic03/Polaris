@@ -6,7 +6,7 @@
     "test": "npx playwright test"
   },
   "dependencies": {
-    "jspdf": "^4.0.0",
+    "jspdf": "^4.1.0",
     "qr-code-styling": "^1.9.2"
   },
   "devDependencies": {
